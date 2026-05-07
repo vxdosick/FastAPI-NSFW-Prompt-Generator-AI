@@ -1,32 +1,35 @@
-
+# SQLite database
 /db/storage/data.db
 
+# Python virtual environment and environment variables
 venv/
+.venv/
 .env/
 .env.*
 .env
 
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 
-
+# Logs
 *.log
 
-
+# IDEs
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-
+# macOS
 .DS_Store
 Thumbs.db
 
-
+# Jupyter notebooks
 .ipynb_checkpoints/
 
-
+# Python packages
 *.egg-info/
 dist/
 build/

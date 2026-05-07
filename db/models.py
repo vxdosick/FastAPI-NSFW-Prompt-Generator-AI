@@ -5,4 +5,4 @@ class User(Base):
     __tablename__ = "users"
 
     telegram_id = Column(String, primary_key=True, index=True)
-    credits = Column(Integer, default=0)
+    credits = Column(Integer, nullable=False, default=5)

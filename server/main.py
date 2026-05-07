@@ -6,6 +6,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from telegram import Update
 import stripe
+
+# Bot imports
 from db.db_ops import get_or_create_user, add_credits
 from db.database import SessionLocal
 from bot.bot import app as tg_app, bot
@@ -13,7 +15,7 @@ from db.database import engine
 from db.models import Base
 
 # Define tokens
-from core.config import STRIPE_LIVE_SECRET_KEY
+from core.config import STRIPE_LIVE_SECRET_KEY, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_BOT_CREDITS, BOT_LINK
 stripe.api_key = STRIPE_LIVE_SECRET_KEY
 
 # Project initialisation
@@ -51,9 +53,9 @@ async def create_checkout(user_id: str):
             "price_data": {
                 "currency": "eur",
                 "product_data": {
-                    "name": "50 Generations 🤗",
+                    "name": PAYMENT_CONTENT,
                 },
-                "unit_amount": 199,
+                "unit_amount": PAYMENT_EURO_PRICE,
             },
             "quantity": 1,
         }],
@@ -62,17 +64,15 @@ async def create_checkout(user_id: str):
         payment_intent_data= {
             "metadata": {
             "telegram_user_id": user_id,
-            "credits": "50"
+            "credits": PAYMENT_BOT_CREDITS
             },
         },
-        success_url="https://t.me/nsfw_prompt_generator_bot?start=payment_success",
-        cancel_url="https://t.me/nsfw_prompt_generator_bot?start=payment_cancel"
+        success_url=f"{BOT_LINK}?start=payment_success",
+        cancel_url=f"{BOT_LINK}?start=payment_cancel"
     )
     return {"url": session.url}
 
-# ------------------------------
 # Stripe webhook
-# ------------------------------
 @server.post("/stripe-webhook")
 async def stripe_webhook(request: Request):
     payload = await request.body()
@@ -85,7 +85,7 @@ async def stripe_webhook(request: Request):
             STRIPE_LIVE_SECRET_KEY
         )
     except Exception as e:
-        print("WEBHOOK ERROR:", e)
+        print("STRIPE WEBHOOK ERROR:", e)
         raise HTTPException(status_code=400)
 
     print("EVENT TYPE:", event["type"])
@@ -95,7 +95,7 @@ async def stripe_webhook(request: Request):
 
         payment_intent_id = session.get("payment_intent")
         if not payment_intent_id:
-            print("NO PAYMENT INTENT")
+            print("STRIPE WEBHOOK ERROR: NO PAYMENT INTENT")
             return {"status": "ok"}
 
         pi = stripe.PaymentIntent.retrieve(payment_intent_id)
@@ -104,10 +104,10 @@ async def stripe_webhook(request: Request):
         telegram_user_id = metadata.get("telegram_user_id")
         credits = int(metadata.get("credits", 0))
 
-        print("PAYMENT OK:", telegram_user_id, credits)
+        print("STRIPE WEBHOOK: PAYMENT OK:", telegram_user_id, credits)
 
         if not telegram_user_id or credits <= 0:
-            print("INVALID METADATA")
+            print("STRIPE WEBHOOK ERROR: INVALID METADATA")
             return {"status": "ok"}
         
         db = SessionLocal()
@@ -120,9 +120,7 @@ async def stripe_webhook(request: Request):
 
     return {"status": "ok"}
 
-# ------------------------------
 # Telegram webhook
-# ------------------------------
 @server.post("/tg-webhook")
 async def telegram_webhook(request: Request):
     payload = await request.json()

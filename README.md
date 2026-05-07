@@ -1,28 +1,25 @@
-# NSFW_Prompt_Generator_AI
+# NSFW Prompt Generator AI
 ### Bot name: @nsfw_prompt_generator_bot
+### [LINK](https://t.me/nsfw_prompt_generator_bot)
+
+This bot has an official version running via Render.com
 
 ### Functionality / Features
 NSFW Prompt Generator AI is an AI-powered assistant designed to generate detailed prompts for adult-oriented image generation models. Key features include:
 
 * AI-powered Prompt Generation – create structured, high-detail prompts based on user descriptions.
-* Model Optimization – prompts are optimized for Stable Diffusion, SDXL, Pony, Flux, Autismix, and other compatible models.
+* Model Optimization – prompts are optimized for Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok-2 and other compatible models.
 * Unrestricted Creative Input – supports explicit, uncensored prompt construction according to user requests.
 * Ready-to-Use Output – generates copy-ready prompts for seamless integration into image generation workflows.
 * Fast & Lightweight – simple interface without complex dashboards or unnecessary steps.
 * Free Trial Access – new users receive a limited number of free generations to explore functionality.
-
-This bot streamlines the process of creating high-quality adult prompts, making prompt engineering faster, more accessible, and more efficient for AI image generation platforms.
-
-### Information about the bot
-1. An AI bot for generating advanced prompts for various generative AI models.
-2. The DEV version of the project uses [Ngrok](https://ngrok.com).
-3. The MVP version of the project uses [Render](https://render.com) as Cloud.
+* This bot streamlines the process of creating high-quality adult prompts, making prompt engineering faster, more accessible, and more efficient for AI image generation platforms.
 
 ### List of bot's comands
 1. /start - Getting started
 2. /help - Help with usage
 3. /credits - Number of generations
-4. /buy - Buy mgeneration ❤️
+4. /buy - Buy generation ❤️
 5. /terms - Privacy Policy and Refund Policy
 
 ### Main stack
@@ -33,8 +30,8 @@ This bot streamlines the process of creating high-quality adult prompts, making 
 - SQLAlchemy 2.0 — ORM
 - OpenRouter API — AI integration
 - Uvicorn — ASGI server
-- Render - deployment (MVP)
-- Ngrok - local tunneling for webhook testing (DEV)
+- Render - deployment
+- Ngrok - local tunneling for webhook testing
 - Stripe - Payment system
 
 ### Useful commands
@@ -42,35 +39,51 @@ This bot streamlines the process of creating high-quality adult prompts, making 
 ```bash
 python -m venv venv
 ```
-1. Create .env file in root direction and write inside:
+1. Install dependencies
 ```bash
-BOT_TOKEN=...
-SERVER_URL=...
-STRIPE_LIVE_SECRET_KEY=...
-OPENAI_API_KEY=...
-STRIPE_LIVE_WEBHOOK_SECRET=...
+pip install -r requirements.txt
 ```
-2. Start server
+2. Create .env file in root direction and write inside:
+```bash
+BOT_TOKEN=telegram bot token
+BOT_LINK=https://t.me/bot_name
+
+SERVER_URL=link from Render.com (production mode)
+
+STRIPE_LIVE_SECRET_KEY=stripe live secret key
+STRIPE_LIVE_WEBHOOK_SECRET=stripe live webhook secret
+
+OPENAI_API_KEY=openrouter api key
+AI_MODEL=ai model (for examle: x-ai/grok-4-fast)
+
+PAYMENT_CONTENT=name of payment (for examle: 50 Generations 🤗)
+PAYMENT_EURO_PRICE=price in eur (for examle: 199) (in cents)
+PAYMENT_BOT_CREDITS=adding credits (for example: 50)
+
+OWNER_TELEGRAM_ID=your telegram id
+OWNER_START_CREDITS=number of credits for the developer (for example: 10,000)
+```
+3. Start server
+- development mode
 ```bash
 uvicorn server.main:server --reload
 ```
-3. Ngrok starting
+- production mode
+```bash
+uvicorn server.main:app --host 0.0.0.0 --port 8000
+```
+4. Ngrok starting (development mode)
 ```bash
 ngrok http 8000
 ```
-4. Start bot (by pooling)
-```bash
-python bot/bot.py
-```
-5. Preservation of requirements
+5. Preservation of requirements (if they change)
 ```bash
 pip freeze > requirements.txt
 ```
 6. Webhook - Telegram Initialisation
 ```bash
-curl -F "url=(ngrok_url or render_url)/tg-webhook" https://api.telegram.org/bot(bot_token)/setWebhook
+curl -F "url=(NGROK_URL)/tg-webhook" https://api.telegram.org/bot(BOT_TOKEN)/setWebhook
 ```
-7. Dependencies install
-```bash
-pip install -r requirements.txt
-```
+
+### VERY IMPORTANT
+Before using this software, please read the [LICENSE](./LICENSE). Thank you – let’s make life a little bit easier for programmers ❤️
