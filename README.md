@@ -82,7 +82,7 @@ pip freeze > requirements.txt
 ```
 6. Webhook - Telegram Initialisation
 ```bash
-curl -F "url=(NGROK_URL)/tg-webhook" https://api.telegram.org/bot(BOT_TOKEN)/setWebhook
+curl -F "url=(APP_URL)/tg-webhook" https://api.telegram.org/bot(BOT_TOKEN)/setWebhook
 ```
 
 ### VERY IMPORTANT

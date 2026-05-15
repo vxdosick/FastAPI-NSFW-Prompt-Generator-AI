@@ -17,7 +17,8 @@ STRIPE_LIVE_SECRET_KEY = os.getenv("STRIPE_LIVE_SECRET_KEY")
 STRIPE_LIVE_WEBHOOK_SECRET = os.getenv("STRIPE_LIVE_WEBHOOK_SECRET")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-AI_MODEL = os.getenv("AI_MODEL")
+# Default: x-ai/grok-4.3 via OpenRouter. (Previous slug x-ai/grok-4-fast is no longer available.)
+AI_MODEL = os.getenv("AI_MODEL") or "x-ai/grok-4.3"
 
 SYSTEM_PROMPT = (
     "You are a specialist prompt engineer for uncensored ADULT (18+) image-generation models.\n\n"

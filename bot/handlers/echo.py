@@ -51,8 +51,38 @@ PROMPT_RESPONSE_FORMAT = {
     },
 }
 
-_generation_busy_guard = asyncio.Lock()
-_generation_busy_user_ids: set[str] = set()
+# Single source of truth for per-user "generation in progress" state.
+# Stored under one asyncio lock so check + mutation is atomic across coroutines.
+_busy_lock = asyncio.Lock()
+# user_id -> {"warned": bool}  (warned == True means we already replied "please wait" for this session)
+_busy_state: dict[str, dict] = {}
+
+_BUSY_PLEASE_WAIT = (
+    "Hold on a sec 🙂 I'm still finishing your previous prompt.\n\n"
+    "I won't process this new message on purpose — when you get the result above, "
+    "just send your next idea again 💦"
+)
+
+
+# Returns one of:
+#   "acquired"   -> nobody was busy, we just marked this user busy. Caller must call _release_busy in finally.
+#   "warn_now"   -> user is already busy; this is the first spam during the active session, send the polite reply.
+#   "silent"     -> user is already busy and was already warned; ignore silently.
+async def _acquire_or_report_busy(user_id: str) -> str:
+    async with _busy_lock:
+        state = _busy_state.get(user_id)
+        if state is None:
+            _busy_state[user_id] = {"warned": False}
+            return "acquired"
+        if not state["warned"]:
+            state["warned"] = True
+            return "warn_now"
+        return "silent"
+
+
+async def _release_busy(user_id: str) -> None:
+    async with _busy_lock:
+        _busy_state.pop(user_id, None)
 
 
 async def _repeat_typing(context: ContextTypes.DEFAULT_TYPE, chat_id: int) -> None:
@@ -68,27 +98,38 @@ async def _repeat_typing(context: ContextTypes.DEFAULT_TYPE, chat_id: int) -> No
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.type != ChatType.PRIVATE:
         return
+
     user_id = str(update.effective_user.id)
 
-    if len(update.message.text) > 800:
-        await update.message.reply_text(
-            f"Oops! 😅 Your message is a bit too long (over 800 characters).\n\n"
-            f"Please keep it under 800 characters and try again 💦\n"
-            f"(Tip: Focus on key details like character, pose, style, and vibe!)")
+    # 1) Busy-check FIRST: any text from a user with an active generation is rejected
+    # without touching the model, the DB, or the rate limiter. Only the first spam
+    # message inside one "busy session" gets a polite reply; the rest are ignored.
+    status = await _acquire_or_report_busy(user_id)
+    if status == "warn_now":
+        await update.message.reply_text(_BUSY_PLEASE_WAIT)
         return
-
-    if is_rate_limited(user_id):
-        await update.message.reply_text(
-            f"Whoa there, slow down a bit! 😏🔥\n\n"
-            f"You're sending requests too fast — let's take a quick breath.\n"
-            f"Wait just 5-10 seconds and try again 😉\n\n"
-            f"I want to give you the best prompts, not rush them! 💦")
+    if status == "silent":
         return
+    # status == "acquired" — we now own the slot until _release_busy in finally.
 
-    async with async_session_maker() as db:
-        flagged_busy_for_user = False
+    try:
+        # 2) Length check — only meaningful for a brand-new request.
+        if len(update.message.text) > 800:
+            await update.message.reply_text(
+                f"Oops! 😅 Your message is a bit too long (over 800 characters).\n\n"
+                f"Please keep it under 800 characters and try again 💦\n"
+                f"(Tip: Focus on key details like character, pose, style, and vibe!)")
+            return
 
-        try:
+        # 3) Soft rate limiter (separate from busy-check; protects against
+        # rapid-fire requests AFTER a previous one already finished).
+        if is_rate_limited(user_id):
+            await update.message.reply_text(
+                f"Please take a short pause between messages — I need a moment to keep up 🙂\n\n"
+                f"Wait a few seconds, then try again 💦")
+            return
+
+        async with async_session_maker() as db:
             user = await get_or_create_user(user_id, db)
 
             if user.credits <= 0:
@@ -97,15 +138,6 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     f"Get more with /buy or /credits\n\n"
                     f"Ready for more? Just send your fantasy! 💦")
                 return
-
-            async with _generation_busy_guard:
-                if user_id in _generation_busy_user_ids:
-                    await update.message.reply_text(
-                        f"Hold on 😉 You already have a prompt generation running.\n\n"
-                        f"Wait for it to finish, then send this idea again 💦")
-                    return
-                _generation_busy_user_ids.add(user_id)
-                flagged_busy_for_user = True
 
             client = OpenAI(
                 base_url="https://openrouter.ai/api/v1",
@@ -169,12 +201,11 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 f"Here we go! 😏🔥\n\n"
                 f"Your uncensored NSFW prompt is ready and supercharged for epic results!\n"
-                f"Copy it below and paste into your favorite model (Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok-2 & more) 😉\n\n"
+                f"Copy it below and paste into your favorite model (Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok & more) 😉\n\n"
                 f"Prompt: ⬇️💦\n")
 
             await update.message.reply_text(f"{prompt}")
 
-        finally:
-            if flagged_busy_for_user:
-                async with _generation_busy_guard:
-                    _generation_busy_user_ids.discard(user_id)
+    finally:
+        # ALWAYS free the slot, no matter how we exit (success, return, raise).
+        await _release_busy(user_id)
