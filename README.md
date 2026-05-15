@@ -70,7 +70,7 @@ uvicorn server.main:server --reload
 ```
 - production mode
 ```bash
-uvicorn server.main:app --host 0.0.0.0 --port 8000
+uvicorn server.main:server --host 0.0.0.0 --port 8000
 ```
 4. Ngrok starting (development mode)
 ```bash

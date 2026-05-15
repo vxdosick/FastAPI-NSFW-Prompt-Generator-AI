@@ -16,7 +16,7 @@ from core.config import BOT_TOKEN
 
 # TB App creating
 bot = Bot(BOT_TOKEN)
-app = Application.builder().token(BOT_TOKEN).build()
+app = Application.builder().token(BOT_TOKEN).concurrent_updates(True).build()
 
 # Define TB handlers
 app.add_handler(CommandHandler("start", start))

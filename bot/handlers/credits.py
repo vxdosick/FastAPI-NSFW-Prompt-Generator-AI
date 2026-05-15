@@ -5,19 +5,15 @@ from telegram.constants import ChatType
 
 # DB
 from db.db_ops import get_or_create_user
-from db.database import SessionLocal
+from db.database import async_session_maker
 
 async def credits(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.type != ChatType.PRIVATE:
         return
     user_id = str(update.effective_user.id)
 
-    db = SessionLocal()
-
-    try:
-        user = get_or_create_user(user_id, db)
-    finally:
-        db.close()
+    async with async_session_maker() as db:
+        user = await get_or_create_user(user_id, db)
 
     await update.message.reply_text(
             f"Your generations status 💎😏\n\n"

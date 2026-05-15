@@ -8,10 +8,9 @@ from telegram import Update
 import stripe
 
 # Bot imports
-from db.db_ops import get_or_create_user, add_credits
-from db.database import SessionLocal
 from bot.bot import app as tg_app, bot
-from db.database import engine
+from db.db_ops import add_credits, get_or_create_user
+from db.database import async_session_maker, engine
 from db.models import Base
 
 # Define tokens
@@ -25,10 +24,14 @@ async def init_telegram():
 
 @asynccontextmanager
 async def lifespan(server: FastAPI):
-    # SQLite db table creating
-    Base.metadata.create_all(bind=engine)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     await init_telegram()
-    yield
+    try:
+        yield
+    finally:
+        await engine.dispose()
+
 
 # FastAPI server creating
 server = FastAPI(lifespan=lifespan)
@@ -115,13 +118,10 @@ async def stripe_webhook(request: Request):
             print("STRIPE WEBHOOK ERROR: INVALID METADATA")
             return {"status": "ok"}
         
-        db = SessionLocal()
-        try:
-            get_or_create_user(telegram_user_id, db)
+        async with async_session_maker() as db:
+            await get_or_create_user(telegram_user_id, db)
 
-            add_credits(telegram_user_id, credits, db)
-        finally:
-            db.close()
+            await add_credits(telegram_user_id, credits, db)
 
     return {"status": "ok"}
 
