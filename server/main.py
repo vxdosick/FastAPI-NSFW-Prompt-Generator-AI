@@ -1,7 +1,7 @@
 # Imports
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from telegram import Update
@@ -44,6 +44,11 @@ async def privacy_policy(request: Request):
         "privacy_policy.html",
         {"request": request}
     )
+
+
+@server.get("/health")
+async def health():
+    return PlainTextResponse("ok")
 
 @server.post("/create-checkout-session/{user_id}")
 async def create_checkout(user_id: str):
