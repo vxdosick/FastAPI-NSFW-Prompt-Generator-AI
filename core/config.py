@@ -8,6 +8,8 @@ load_dotenv()
 # Define variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_LINK = os.getenv("BOT_LINK")
+# Support username for links (e.g. @yourname) — not a full URL
+SUPPORT_TELEGRAM = os.getenv("SUPPORT_TELEGRAM")
 
 SERVER_URL = os.getenv("SERVER_URL")
 

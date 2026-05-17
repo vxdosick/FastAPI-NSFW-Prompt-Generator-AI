@@ -1,8 +1,7 @@
 # NSFW Prompt Generator AI
-### Bot name: @nsfw_prompt_generator_bot
-### [LINK](https://t.me/nsfw_prompt_generator_bot)
+### Bot name: [@nsfw_prompt_generator_bot](https://t.me/nsfw_prompt_generator_bot)
 
-This bot has an official version running via Render.com
+This bot has an official version.
 
 ### Functionality / Features
 NSFW Prompt Generator AI is an AI-powered assistant designed to generate detailed prompts for adult-oriented image generation models. Key features include:
@@ -21,12 +20,13 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 3. /credits - Number of generations
 4. /buy - Buy generation ❤️
 5. /terms - Privacy Policy and Refund Policy
+6. /contacts - Contact the developer or report a bug 👨‍💻
 
 ### Main stack
 - Python 3.12.12
 - Telegram Bot API (python-telegram-bot)
 - FastAPI — REST API layer
-- SQLite — lightweight database
+- PostgreSQL (Neon) — lightweight database
 - SQLAlchemy 2.0 — ORM
 - OpenRouter API — AI integration
 - Uvicorn — ASGI server

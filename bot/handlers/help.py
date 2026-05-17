@@ -19,7 +19,8 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"/start — Show welcome message & check remaining generations\n"
             f"/help — This help menu\n"
             f"/buy — Buy more generations\n"
-            f"/credits — Check how many free generations you have left\n\n"
+            f"/credits — Check how many free generations you have left\n"
+            f"/contacts — Report an issue or message support\n\n"
             f"🔹 Tip:\n"
             f"Be as specific (or as wild) as you want — I handle everything without judgment 💦\n\n"
             f"Ready to create something spicy? Just type your idea now! 😈")
