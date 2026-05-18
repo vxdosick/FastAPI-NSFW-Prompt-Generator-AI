@@ -7,6 +7,11 @@ from telegram.constants import ChatType
 from db.db_ops import get_or_create_user
 from db.database import async_session_maker
 
+_START_EXAMPLE_PROMPT = (
+    "Generate a cyberpunk succubus, neon lighting, highly detailed, 8k"
+)
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.type != ChatType.PRIVATE:
         return
@@ -16,28 +21,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     async with async_session_maker() as db:
         user = await get_or_create_user(user_id, db)
 
-    if user.credits == 0:
-        await update.message.reply_text(
-            f"Hey there! 👋😈\n\n"
-            f"Welcome to your Uncensored NSFW Prompt Generator AI -\n"
-            f"the ultimate AI sidekick that turns your wildest fantasies into\n"
-            f"ultra-detailed, fully uncensored prompts 🔥\n\n"
-            f"Just describe your spicy idea (the dirtier, the better 😉),\n"
-            f"and I’ll instantly craft a powerful prompt perfectly tuned for\n"
-            f"Stable Diffusion, Pony, Flux, SDXL, or any uncensored model.\n\n"
-            f"No limits. No filters. Pure creative freedom 💦\n\n"
-            f"Generations used up 😇 No worries - you can more generations!\n"
-            f"Type /buy for details 🔥")
-    else:
-        await update.message.reply_text(
-            f"Hey there! 👋😈\n\n"
-            f"Welcome to your Uncensored NSFW Prompt Generator AI -\n"
-            f"the ultimate AI sidekick that turns your wildest fantasies into\n"
-            f"ultra-detailed, fully uncensored prompts 🔥\n\n"
-            f"Just describe your spicy idea (the dirtier, the better 😉),\n"
-            f"and I’ll instantly craft a powerful prompt perfectly tuned for\n"
-            f"Stable Diffusion, Pony, Flux, SDXL, or any uncensored model.\n\n"
-            f"No limits. No filters. Pure creative freedom 💦\n\n"
-            f"New users get 5 free generations as a welcome gift -"
-            f"let’s get started right now!🎁\n\n"
-            f"Remaining generations: {user.credits}💎")
+    await update.message.reply_text(
+        f"Hey! 😈\n"
+        f"<b>Welcome to NSFW Prompt Generator AI.</b>\n\n"
+        f"Send me any spicy idea, and I'll turn it into a hyper-detailed, "
+        f"uncensored prompt for Flux, Pony, SDXL, or Stable Diffusion.\n\n"
+        f"💰 <b>Your Balance:</b> {user.credits} free credits\n\n"
+        f"🔥 <b>Try it right now!</b> Tap to copy this example, paste it into "
+        f"the chat and send:\n"
+        f"<code>{_START_EXAMPLE_PROMPT}</code>",
+        parse_mode="HTML",
+    )

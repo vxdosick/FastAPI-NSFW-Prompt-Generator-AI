@@ -17,10 +17,9 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 ### List of bot's comands
 1. /start - Getting started
 2. /help - Help with usage
-3. /credits - Number of generations
-4. /buy - Buy generation ❤️
-5. /terms - Privacy Policy and Refund Policy
-6. /contacts - Contact the developer or report a bug 👨‍💻
+3. /balance - Check credits and buy generations ❤️
+4. /terms - Privacy Policy and Refund Policy
+5. /contacts - Contact the developer or report a bug 👨‍💻
 
 ### Main stack
 - Python 3.12.12
@@ -56,9 +55,9 @@ STRIPE_LIVE_WEBHOOK_SECRET=stripe live webhook secret
 OPENAI_API_KEY=openrouter api key
 AI_MODEL=ai model (for examle: x-ai/grok-4-fast)
 
-PAYMENT_CONTENT=name of payment (for examle: 50 Generations 🤗)
+PAYMENT_CONTENT=name of payment (for examle: 150 Generations 🤗)
 PAYMENT_EURO_PRICE=price in eur (for examle: 199) (in cents)
-PAYMENT_BOT_CREDITS=adding credits (for example: 50)
+PAYMENT_BOT_CREDITS=adding credits (for example: 150 or PAYMENT_CONTENT)
 
 OWNER_TELEGRAM_ID=your telegram id
 OWNER_START_CREDITS=number of credits for the developer (for example: 10,000)

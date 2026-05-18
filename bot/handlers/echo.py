@@ -1,6 +1,8 @@
 # Imports
 import asyncio
+import html
 import json
+import httpx
 from telegram import Update
 from telegram.ext import ContextTypes
 from telegram.constants import ChatAction, ChatType
@@ -14,7 +16,13 @@ from db.database import async_session_maker
 from bot.utils.is_rate_limited import is_rate_limited
 
 # Define tokens
-from core.config import OPENAI_API_KEY, AI_MODEL, SYSTEM_PROMPT
+from core.config import (
+    OPENAI_API_KEY,
+    AI_MODEL,
+    PAYMENT_BOT_CREDITS,
+    SERVER_URL,
+    SYSTEM_PROMPT,
+)
 
 
 PROMPT_RESPONSE_FORMAT = {
@@ -85,6 +93,45 @@ async def _release_busy(user_id: str) -> None:
         _busy_state.pop(user_id, None)
 
 
+async def _create_checkout_url(user_id: str) -> str | None:
+    if not SERVER_URL:
+        return None
+
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            response = await client.post(f"{SERVER_URL}/create-checkout-session/{user_id}")
+            response.raise_for_status()
+            data = response.json()
+    except (httpx.HTTPError, ValueError, KeyError):
+        return None
+
+    return data.get("url")
+
+
+async def _reply_out_of_credits(update: Update, user_id: str) -> None:
+    checkout_url = await _create_checkout_url(user_id)
+    credit_count = PAYMENT_BOT_CREDITS or "150"
+
+    if checkout_url:
+        await update.message.reply_text(
+            f"Oops! 😅 You're out of free credits.\n\n"
+            f"Want to unlock pure creative freedom without limits?\n"
+            f"Get <b>{html.escape(str(credit_count))} premium generations</b> "
+            f"right now for just €1.99! 🔥\n\n"
+            f"👉 <a href=\"{html.escape(checkout_url, quote=True)}\">"
+            f"Click here to buy {html.escape(str(credit_count))} Credits via Stripe</a>",
+            parse_mode="HTML",
+            disable_web_page_preview=True,
+        )
+        return
+
+    await update.message.reply_text(
+        f"Oops! 😅 You're out of free credits.\n\n"
+        f"Want to unlock pure creative freedom without limits?\n"
+        f"Use /balance to get more premium generations 🔥"
+    )
+
+
 async def _repeat_typing(context: ContextTypes.DEFAULT_TYPE, chat_id: int) -> None:
     """Keep Telegram 'typing…' visible while a long sync call runs off the event loop."""
     try:
@@ -133,10 +180,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             user = await get_or_create_user(user_id, db)
 
             if user.credits <= 0:
-                await update.message.reply_text(
-                    f"Oops! 😅 You're out of generations.\n\n"
-                    f"Get more with /buy or /credits\n\n"
-                    f"Ready for more? Just send your fantasy! 💦")
+                await _reply_out_of_credits(update, user_id)
                 return
 
             client = OpenAI(
@@ -201,10 +245,12 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 f"Here we go! 😏🔥\n\n"
                 f"Your uncensored NSFW prompt is ready and supercharged for epic results!\n"
-                f"Copy it below and paste into your favorite model (Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok & more) 😉\n\n"
-                f"Prompt: ⬇️💦\n")
-
-            await update.message.reply_text(f"{prompt}")
+                f"Copy it below and paste into your favorite model (Flux, Pony XL, "
+                f"Illustrious, RealVisXL, SDXL, Midjourney, Grok & more) 😉\n\n"
+                f"Prompt: ⬇️💦\n"
+                f"<code>{html.escape(prompt)}</code>",
+                parse_mode="HTML",
+            )
 
     finally:
         # ALWAYS free the slot, no matter how we exit (success, return, raise).
