@@ -14,7 +14,7 @@ from db.database import async_session_maker, engine
 from db.models import Base
 
 # Define tokens
-from core.config import STRIPE_LIVE_SECRET_KEY, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_BOT_CREDITS, BOT_LINK
+from core.config import STRIPE_LIVE_SECRET_KEY, STRIPE_LIVE_WEBHOOK_SECRET, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_BOT_CREDITS, BOT_LINK
 stripe.api_key = STRIPE_LIVE_SECRET_KEY
 
 # Project initialisation
@@ -90,7 +90,7 @@ async def stripe_webhook(request: Request):
         event = stripe.Webhook.construct_event(
             payload,
             sig_header,
-            STRIPE_LIVE_SECRET_KEY
+            STRIPE_LIVE_WEBHOOK_SECRET
         )
     except Exception as e:
         print("STRIPE WEBHOOK ERROR:", e)
