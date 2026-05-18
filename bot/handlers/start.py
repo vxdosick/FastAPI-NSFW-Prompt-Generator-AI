@@ -28,7 +28,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"uncensored prompt for Flux, Pony, SDXL, or Stable Diffusion.\n\n"
         f"💰 <b>Your Balance:</b> {user.credits} free credits\n\n"
         f"🔥 <b>Try it right now!</b> Tap to copy this example, paste it into "
-        f"the chat and send:\n"
+        f"the chat and send:\n\n"
         f"<code>{_START_EXAMPLE_PROMPT}</code>",
         parse_mode="HTML",
     )

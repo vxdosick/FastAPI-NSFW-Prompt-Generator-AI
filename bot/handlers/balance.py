@@ -47,7 +47,7 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = await get_or_create_user(user_id, db)
 
     checkout_url = await _create_checkout_url(user_id)
-    credit_pack = PAYMENT_BOT_CREDITS or "150"
+    credit_pack = str(PAYMENT_BOT_CREDITS).strip()
     price = _price_label()
 
     if checkout_url:

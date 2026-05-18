@@ -247,7 +247,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Your uncensored NSFW prompt is ready and supercharged for epic results!\n"
                 f"Copy it below and paste into your favorite model (Flux, Pony XL, "
                 f"Illustrious, RealVisXL, SDXL, Midjourney, Grok & more) 😉\n\n"
-                f"Prompt: ⬇️💦\n"
+                f"Prompt: ⬇️💦\n\n"
                 f"<code>{html.escape(prompt)}</code>",
                 parse_mode="HTML",
             )
