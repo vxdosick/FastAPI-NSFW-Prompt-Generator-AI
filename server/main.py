@@ -17,8 +17,6 @@ from db.models import Base
 from core.config import STRIPE_LIVE_SECRET_KEY, STRIPE_LIVE_WEBHOOK_SECRET, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_BOT_CREDITS, BOT_LINK
 stripe.api_key = STRIPE_LIVE_SECRET_KEY
 
-BOT_PAYMENT_NAME = "NSFW Prompt Generator AI"
-
 # Project initialisation
 async def init_telegram():
     await bot.initialize()
@@ -57,12 +55,6 @@ async def health():
 
 @server.post("/create-checkout-session/{user_id}")
 async def create_checkout(user_id: str):
-    payment_metadata = {
-        "bot_name": BOT_PAYMENT_NAME,
-        "telegram_user_id": user_id,
-        "credits": PAYMENT_BOT_CREDITS
-    }
-
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
@@ -76,10 +68,12 @@ async def create_checkout(user_id: str):
             "quantity": 1,
         }],
         mode="payment",
-        metadata=payment_metadata,
         # save user information
         payment_intent_data= {
-            "metadata": payment_metadata,
+            "metadata": {
+            "telegram_user_id": user_id,
+            "credits": PAYMENT_BOT_CREDITS
+            },
         },
         success_url=f"{BOT_LINK}?start=payment_success",
         cancel_url=f"{BOT_LINK}?start=payment_cancel"
@@ -113,13 +107,7 @@ async def stripe_webhook(request: Request):
             return {"status": "ok"}
 
         pi = stripe.PaymentIntent.retrieve(payment_intent_id)
-        metadata = dict(session.get("metadata") or {})
-        metadata.update(dict(pi.get("metadata") or {}))
-        print("WEBHOOK METADATA:", metadata)
-
-        if metadata.get("bot_name") != BOT_PAYMENT_NAME:
-            print("SKIP PAYMENT FOR ANOTHER BOT")
-            return {"status": "ok"}
+        metadata = pi.get("metadata", {})
 
         telegram_user_id = metadata.get("telegram_user_id")
         credits = int(metadata.get("credits", 0))
@@ -134,7 +122,6 @@ async def stripe_webhook(request: Request):
             await get_or_create_user(telegram_user_id, db)
 
             await add_credits(telegram_user_id, credits, db)
-            print("CREDITS ADDED:", telegram_user_id, credits)
 
     return {"status": "ok"}
 
