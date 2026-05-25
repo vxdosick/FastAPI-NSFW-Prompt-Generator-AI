@@ -16,6 +16,7 @@ from db.models import Base
 # Define tokens
 from core.config import STRIPE_LIVE_SECRET_KEY, STRIPE_LIVE_WEBHOOK_SECRET, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_BOT_CREDITS, BOT_LINK
 stripe.api_key = STRIPE_LIVE_SECRET_KEY
+STRIPE_BOT_METADATA = "Prompt_Generator_Bot"
 
 # Project initialisation
 async def init_telegram():
@@ -55,6 +56,12 @@ async def health():
 
 @server.post("/create-checkout-session/{user_id}")
 async def create_checkout(user_id: str):
+    payment_metadata = {
+        "bot_name": STRIPE_BOT_METADATA,
+        "telegram_user_id": user_id,
+        "credits": PAYMENT_BOT_CREDITS
+    }
+
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
@@ -63,17 +70,15 @@ async def create_checkout(user_id: str):
                 "product_data": {
                     "name": PAYMENT_CONTENT,
                 },
-                "unit_amount": PAYMENT_EURO_PRICE,
+                "unit_amount": int(PAYMENT_EURO_PRICE),
             },
             "quantity": 1,
         }],
         mode="payment",
+        metadata=payment_metadata,
         # save user information
         payment_intent_data= {
-            "metadata": {
-            "telegram_user_id": user_id,
-            "credits": PAYMENT_BOT_CREDITS
-            },
+            "metadata": payment_metadata,
         },
         success_url=f"{BOT_LINK}?start=payment_success",
         cancel_url=f"{BOT_LINK}?start=payment_cancel"
@@ -107,7 +112,8 @@ async def stripe_webhook(request: Request):
             return {"status": "ok"}
 
         pi = stripe.PaymentIntent.retrieve(payment_intent_id)
-        metadata = pi.get("metadata", {})
+        metadata = dict(session.get("metadata") or {})
+        metadata.update(dict(pi.get("metadata") or {}))
 
         telegram_user_id = metadata.get("telegram_user_id")
         credits = int(metadata.get("credits", 0))

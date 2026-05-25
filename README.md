@@ -42,26 +42,7 @@ python -m venv venv
 ```bash
 pip install -r requirements.txt
 ```
-2. Create .env file in root direction and write inside:
-```bash
-BOT_TOKEN=telegram bot token
-BOT_LINK=https://t.me/bot_name
-
-SERVER_URL=link from Render.com (production mode)
-
-STRIPE_LIVE_SECRET_KEY=stripe live secret key
-STRIPE_LIVE_WEBHOOK_SECRET=stripe live webhook secret
-
-OPENAI_API_KEY=openrouter api key
-AI_MODEL=ai model (for examle: x-ai/grok-4-fast)
-
-PAYMENT_CONTENT=name of payment (for examle: 150 Generations 🤗)
-PAYMENT_EURO_PRICE=price in eur (for examle: 199) (in cents)
-PAYMENT_BOT_CREDITS=adding credits (for example: 150 or PAYMENT_CONTENT)
-
-OWNER_TELEGRAM_ID=your telegram id
-OWNER_START_CREDITS=number of credits for the developer (for example: 10,000)
-```
+2. Copy environment variables from `.env.example` into a new `.env` file in the project root and fill in your values.
 3. Start server
 - development mode
 ```bash

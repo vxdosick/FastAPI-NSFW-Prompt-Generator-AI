@@ -2,16 +2,18 @@
 import html
 
 import httpx
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice, Update
 from telegram.constants import ChatType
 from telegram.ext import ContextTypes
 
 # DB
-from db.db_ops import get_or_create_user
+from db.db_ops import add_credits, get_or_create_user
 from db.database import async_session_maker
 
 # Define tokens
-from core.config import PAYMENT_BOT_CREDITS, PAYMENT_EURO_PRICE, SERVER_URL
+from core.config import PAYMENT_BOT_CREDITS, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_STARS_PRICE, SERVER_URL
+
+STARS_CALLBACK_DATA = "buy_stars"
 
 
 def _price_label() -> str:
@@ -20,6 +22,18 @@ def _price_label() -> str:
     except (TypeError, ValueError):
         return "€1.99"
     return f"€{cents / 100:.2f}"
+
+
+def _credit_pack() -> int:
+    return int(str(PAYMENT_BOT_CREDITS).strip())
+
+
+def _payment_content() -> str:
+    return str(PAYMENT_CONTENT).strip()
+
+
+def _stars_price() -> int:
+    return int(str(PAYMENT_STARS_PRICE).strip())
 
 
 async def _create_checkout_url(user_id: str) -> str | None:
@@ -31,7 +45,8 @@ async def _create_checkout_url(user_id: str) -> str | None:
             response = await client.post(f"{SERVER_URL}/create-checkout-session/{user_id}")
             response.raise_for_status()
             data = response.json()
-    except (httpx.HTTPError, ValueError):
+    except (httpx.HTTPError, ValueError) as e:
+        print("STRIPE CHECKOUT LINK ERROR:", e)
         return None
 
     return data.get("url")
@@ -47,23 +62,107 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = await get_or_create_user(user_id, db)
 
     checkout_url = await _create_checkout_url(user_id)
-    credit_pack = str(PAYMENT_BOT_CREDITS).strip()
+    payment_content = _payment_content()
     price = _price_label()
+    stars_price = _stars_price()
+    buttons = []
 
     if checkout_url:
-        await update.message.reply_text(
-            f"Your balance 💎\n\n"
-            f"💰 <b>Available credits:</b> {user.credits}\n\n"
-            f"Need more generations?\n"
-            f"Get <b>{html.escape(str(credit_pack))} premium credits</b> for {html.escape(price)} 🔥\n\n"
-            f"👉 <a href=\"{html.escape(checkout_url, quote=True)}\">Buy credits via Stripe</a>",
-            parse_mode="HTML",
-            disable_web_page_preview=True,
+        buttons.append(
+            InlineKeyboardButton("Stripe 💳", url=checkout_url)
         )
-        return
+    buttons.append(
+        InlineKeyboardButton(f"Pay {stars_price} ⭐", callback_data=STARS_CALLBACK_DATA)
+    )
 
     await update.message.reply_text(
         f"Your balance 💎\n\n"
-        f"💰 Available credits: {user.credits}\n\n"
-        f"Payment link is temporarily unavailable. Please try again later."
+        f"💰 <b>Available credits:</b> {user.credits}\n\n"
+        f"Stripe payment: <b>{html.escape(price)}</b> = "
+        f"<b>{html.escape(payment_content)}</b>.\n"
+        f"Stars payment: <b>{stars_price} ⭐</b> = "
+        f"<b>{html.escape(payment_content)}</b>.\n\n"
+        f"Choose your payment method:",
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([buttons]),
+        disable_web_page_preview=True,
+    )
+
+
+async def stars_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    if not query or query.message.chat.type != ChatType.PRIVATE:
+        return
+
+    await query.answer()
+
+    user_id = str(query.from_user.id)
+    credit_pack = _credit_pack()
+    payment_content = _payment_content()
+    stars_price = _stars_price()
+
+    await query.message.reply_invoice(
+        title=payment_content,
+        description=f"Unlock {payment_content} with Telegram Stars.",
+        payload=f"stars:{user_id}:{credit_pack}",
+        provider_token="",
+        currency="XTR",
+        prices=[LabeledPrice(payment_content, stars_price)],
+    )
+
+
+async def stars_pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.pre_checkout_query
+    payload_parts = (query.invoice_payload or "").split(":")
+    expected_credits = str(_credit_pack())
+    stars_price = _stars_price()
+
+    is_valid = (
+        query.currency == "XTR"
+        and query.total_amount == stars_price
+        and len(payload_parts) == 3
+        and payload_parts[0] == "stars"
+        and payload_parts[1] == str(query.from_user.id)
+        and payload_parts[2] == expected_credits
+    )
+
+    if not is_valid:
+        await query.answer(ok=False, error_message="Invalid Stars payment payload.")
+        return
+
+    await query.answer(ok=True)
+
+
+async def stars_successful_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type != ChatType.PRIVATE:
+        return
+
+    payment = update.message.successful_payment
+    payload_parts = (payment.invoice_payload or "").split(":")
+    credit_pack = _credit_pack()
+    payment_content = _payment_content()
+    stars_price = _stars_price()
+
+    is_valid = (
+        payment.currency == "XTR"
+        and payment.total_amount == stars_price
+        and len(payload_parts) == 3
+        and payload_parts[0] == "stars"
+        and payload_parts[1] == str(update.effective_user.id)
+        and payload_parts[2] == str(credit_pack)
+    )
+
+    if not is_valid:
+        await update.message.reply_text(
+            "Payment received, but I couldn't verify it automatically. Please contact support."
+        )
+        return
+
+    async with async_session_maker() as db:
+        await get_or_create_user(str(update.effective_user.id), db)
+        await add_credits(str(update.effective_user.id), credit_pack, db)
+
+    await update.message.reply_text(
+        f"Payment successful! ⭐\n\n"
+        f"{payment_content} have been added to your balance 💎"
     )
