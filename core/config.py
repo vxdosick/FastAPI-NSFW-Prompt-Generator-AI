@@ -61,4 +61,9 @@ PAYMENT_BOT_CREDITS = os.getenv("PAYMENT_BOT_CREDITS")
 OWNER_TELEGRAM_ID = os.getenv("OWNER_TELEGRAM_ID")
 OWNER_START_CREDITS = os.getenv("OWNER_START_CREDITS")
 
-MAX_SAVED_PROMPTS = os.getenv("MAX_SAVED_PROMPTS")
+_max_saved_raw = os.getenv("MAX_SAVED_PROMPTS")
+MAX_SAVED_PROMPTS = (
+    int(_max_saved_raw.strip())
+    if _max_saved_raw and str(_max_saved_raw).strip()
+    else 5
+)

@@ -7,6 +7,9 @@ from telegram.constants import ChatType
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes
 
+# Config
+from core.config import MAX_SAVED_PROMPTS
+
 # DB
 from db.db_ops import delete_saved_prompt, get_saved_prompts, save_prompt
 from db.database import async_session_maker
@@ -33,7 +36,7 @@ def _format_prompt_message(item: dict, position: int, total: int) -> str:
     prompt_text = html.escape(str(item.get("prompt", "")))
     return (
         f"Your saved prompts 🍓\n"
-        f"You can save up to 5 prompts 😊\n\n"
+        f"You can save up to {MAX_SAVED_PROMPTS} prompts 😊\n\n"
         f"<b>{title}</b> ({position + 1}/{total})\n\n"
         f"<code>{prompt_text}</code>\n\n"
         f"Click on the prompt to copy it ⬆️"
@@ -201,7 +204,7 @@ async def save_prompt_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     if not was_saved:
         await query.answer()
         await query.message.reply_text(
-            "You can save up to 5 prompts.\n\n"
+            f"You can save up to {MAX_SAVED_PROMPTS} prompts.\n\n"
             "Open /prompts to view them. 📄"
         )
         return
