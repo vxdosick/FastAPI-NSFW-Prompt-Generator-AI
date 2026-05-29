@@ -13,13 +13,15 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 * Fast & Lightweight – simple interface without complex dashboards or unnecessary steps.
 * Free Trial Access – new users receive a limited number of free generations to explore functionality.
 * This bot streamlines the process of creating high-quality adult prompts, making prompt engineering faster, more accessible, and more efficient for AI image generation platforms.
+* Save or delete up to 5 prompts. This limit may be increased in the future.
 
 ### List of bot's comands
 1. /start - Getting started
 2. /help - Help with usage
 3. /balance - Check credits and buy generations ❤️
-4. /terms - Privacy Policy and Refund Policy
-5. /contacts - Contact the developer or report a bug 👨‍💻
+4. /prompts - View saved prompts 🍓
+5. /terms - Privacy Policy and Refund Policy
+6. /contacts - Contact the developer or report a bug 👨‍💻
 
 ### Main stack
 - Python 3.12.12
@@ -32,6 +34,7 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 - Render - deployment
 - Ngrok - local tunneling for webhook testing
 - Stripe - Payment system
+- Alembic (For database migrations)
 
 ### Useful commands
 0. Environment creating
@@ -43,7 +46,11 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 2. Copy environment variables from `.env.example` into a new `.env` file in the project root and fill in your values.
-3. Start server
+3. Run database migrations
+```bash
+alembic upgrade head
+```
+4. Start server
 - development mode
 ```bash
 uvicorn server.main:server --reload
@@ -52,15 +59,15 @@ uvicorn server.main:server --reload
 ```bash
 uvicorn server.main:server --host 0.0.0.0 --port 8000
 ```
-4. Ngrok starting (development mode)
+5. Ngrok starting (development mode)
 ```bash
 ngrok http 8000
 ```
-5. Preservation of requirements (if they change)
+6. Preservation of requirements (if they change)
 ```bash
 pip freeze > requirements.txt
 ```
-6. Webhook - Telegram Initialisation
+7. Webhook - Telegram Initialisation
 ```bash
 curl -F "url=(SERVER_URL)/tg-webhook" https://api.telegram.org/bot(BOT_TOKEN)/setWebhook
 ```

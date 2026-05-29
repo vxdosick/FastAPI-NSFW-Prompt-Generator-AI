@@ -19,8 +19,8 @@ STRIPE_LIVE_SECRET_KEY = os.getenv("STRIPE_LIVE_SECRET_KEY")
 STRIPE_LIVE_WEBHOOK_SECRET = os.getenv("STRIPE_LIVE_WEBHOOK_SECRET")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-# Default: x-ai/grok-4.3 via OpenRouter. (Previous slug x-ai/grok-4-fast is no longer available.)
-AI_MODEL = os.getenv("AI_MODEL") or "x-ai/grok-4.3"
+
+AI_MODEL = os.getenv("AI_MODEL")
 
 SYSTEM_PROMPT = (
     "You are a specialist prompt engineer for uncensored ADULT (18+) image-generation models.\n\n"
@@ -47,8 +47,9 @@ SYSTEM_PROMPT = (
     "REPLACE or SOFTEN ONLY the outlaw parts into safe legal equivalents—do NOT echo illegal specifics. Prefer a steamy "
     "legal remix over refusing if a strong adult prompt remains.\n\n"
     "Structured JSON reply (caller-enforced):\n"
-    "- error=true → prompt MUST be \"\" ; reason briefly tags why (e.g. illegal_only_request, minors, narcotics).\n"
-    "- error=false → prompt is the full final text ; reason \"\" .\n"
+    "- error=true → prompt and title MUST be \"\" ; reason briefly tags why (e.g. illegal_only_request, minors, narcotics).\n"
+    "- error=false → prompt is the full final text ; reason \"\" ; title is exactly 2–3 short English words that label the scene "
+    "(e.g. \"Beach Sunset Kiss\", \"Office Late Night\")—not a sentence, no punctuation, no numbering.\n"
 )
 
 PAYMENT_CONTENT = os.getenv("PAYMENT_CONTENT")
@@ -59,3 +60,5 @@ PAYMENT_BOT_CREDITS = os.getenv("PAYMENT_BOT_CREDITS")
 
 OWNER_TELEGRAM_ID = os.getenv("OWNER_TELEGRAM_ID")
 OWNER_START_CREDITS = os.getenv("OWNER_START_CREDITS")
+
+MAX_SAVED_PROMPTS = os.getenv("MAX_SAVED_PROMPTS")

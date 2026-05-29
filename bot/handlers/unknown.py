@@ -13,6 +13,7 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"/start — Welcome message & generations info\n"
         f"/help — How to use me\n"
         f"/balance — Check credits and buy more generations\n"
+        f"/prompts — View saved prompts\n"
         f"/contacts — Support & bug reports\n\n"
         f"/terms — Terms & Policies\n\n"
         f"Or just describe your fantasy — I'll create a hot prompt right away! 🔥💦")

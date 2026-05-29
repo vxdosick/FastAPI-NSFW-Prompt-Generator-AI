@@ -3,7 +3,7 @@ import asyncio
 import html
 import json
 import httpx
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 from telegram.constants import ChatAction, ChatType
 from openai import OpenAI
@@ -14,6 +14,7 @@ from db.database import async_session_maker
 
 # Utils
 from bot.utils.is_rate_limited import is_rate_limited
+from bot.handlers.prompts import cache_prompt_for_saving
 
 # Define tokens
 from core.config import (
@@ -45,6 +46,13 @@ PROMPT_RESPONSE_FORMAT = {
                         "Final English image prompt, ~300–400 characters. Must be empty when error is true."
                     ),
                 },
+                "title": {
+                    "type": "string",
+                    "description": (
+                        "2–3 short English words labeling the scene for the user's saved list. "
+                        "Must be empty when error is true."
+                    ),
+                },
                 "reason": {
                     "type": "string",
                     "description": (
@@ -53,7 +61,7 @@ PROMPT_RESPONSE_FORMAT = {
                     ),
                 },
             },
-            "required": ["error", "prompt", "reason"],
+            "required": ["error", "prompt", "title", "reason"],
             "additionalProperties": False,
         },
     },
@@ -228,6 +236,9 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             is_error = bool(data.get("error"))
             prompt = (data.get("prompt") or "").strip()
+            title = (data.get("title") or "").strip()
+            if title:
+                title = " ".join(title.split()[:3])
 
             if is_error or not prompt:
                 await update.message.reply_text(
@@ -250,6 +261,16 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Prompt: ⬇️💦\n\n"
                 f"<code>{html.escape(prompt)}</code>",
                 parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "Save Prompt 🍓",
+                                callback_data=cache_prompt_for_saving(prompt, title),
+                            )
+                        ]
+                    ]
+                ),
             )
 
     finally:

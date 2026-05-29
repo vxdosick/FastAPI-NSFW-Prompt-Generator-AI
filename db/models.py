@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, JSON
 from db.database import Base
 
 class User(Base):
@@ -6,3 +6,4 @@ class User(Base):
 
     telegram_id = Column(String, primary_key=True, index=True)
     credits = Column(Integer, nullable=False, default=5)
+    prompts = Column(JSON, nullable=True)
