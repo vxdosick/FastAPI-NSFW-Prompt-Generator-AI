@@ -42,13 +42,19 @@ templates = Jinja2Templates(directory="server/templates")
 server.mount("/static", StaticFiles(directory="server/static"), name="static")
 
 # FastAPI Endpoints
-@server.get("/privacy-policy", response_class=HTMLResponse)
+@server.get("/", response_class=HTMLResponse)
 async def privacy_policy(request: Request):
     return templates.TemplateResponse(
-        "privacy_policy.html",
+        "index.html",
         {"request": request}
     )
 
+@server.get("/terms", response_class=HTMLResponse)
+async def privacy_policy(request: Request):
+    return templates.TemplateResponse(
+        "terms.html",
+        {"request": request}
+    )
 
 @server.get("/health")
 async def health():

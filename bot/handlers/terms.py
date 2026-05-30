@@ -16,7 +16,7 @@ async def terms(update: Update, context: ContextTypes.DEFAULT_TYPE):
     f"Everything is simple and transparent:\n"
     f"• No subscriptions — pay only for what you use\n"
     f"• Instant delivery of generations after payment\n"
-    f"<a href=\"{SERVER_URL}/privacy-policy\">Privacy Policy and Refund Policy</a>\n"),
+    f"<a href=\"{SERVER_URL}/terms\">Terms of Use, Privacy Policy and Refund Policy</a>\n"),
     parse_mode="HTML",
     disable_web_page_preview=True
     )

@@ -3,23 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% include "partials/favicon.html" %}
     <link rel="stylesheet" href="/static/style.css" />
-    <title>NFSW_Prompt_Generator_AI Privacy-Policy and Refund Policy</title>
+    <title>Terms of Use, Privacy Policy and Refund Policy — NSFW Prompt Generator AI</title>
   </head>
   <body>
     <div class="wrapper">
       <header class="header">
         <div class="header__container">
-          <a href="/privacy-policy" class="header__logo">NFSW_Prompt_Generator_AI</a>
-          <nav class="header__menu">
-            <ul>
-              <li><a href="#privacy-policy">Privacy-Policy</a></li>
-              <li><a href="#refund-policy">Refund-Policy</a></li>
-            </ul>
-          </nav>
+            <a href="/" class="header__logo">NSFW Prompt Generator AI</a>
+            <nav class="header__menu">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/terms">Terms</a></li>
+                </ul>
+            </nav>
         </div>
-      </header>
+    </header>
       <main class="main">
+        <section id="terms-of-use" class="privacypolicy">
+          <div class="privacypolicy__container">
+            <article class="policy-article">
+              <header class="policy-article__header">
+                <h2 class="privacypolicy__title">Terms of Use</h2>
+                <p class="privacypolicy__subtitle">
+                  Rules for using the Bot and this website.
+                </p>
+              </header>
+              <div class="policy-article__body">
+                <div class="policy-block">
+                  <h2>1. Age requirement</h2>
+                  <p>
+                    The Bot and its services are intended only for individuals who are
+                    at least 18 years of age. By accessing or using the Bot, you confirm
+                    that you are 18 years of age or older.
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
         <section id="privacy-policy" class="privacypolicy">
           <div class="privacypolicy__container">
             <article class="policy-article">
@@ -181,22 +204,7 @@
           </div>
         </section>
       </main>
-      <footer class="footer">
-        <div class="footer__container">
-          <a href="/privacy-policy" class="footer__logo">NFSW_Prompt_Generator_AI</a>
-          <div class="footer__meta">
-            <p class="footer__copyright">
-              © 2026 NFSW_Prompt_Generator_AI. All rights reserved.
-            </p>
-            <p class="footer__updated">Last updated: 03.01.2026</p>
-            <p class="footer__disclaimer">
-              NFSW_Prompt_Generator_AI is the official bot covered by these policies.
-              This site publishes the Privacy Policy and Refund Policy for users on the
-              Telegram platform.
-            </p>
-          </div>
-        </div>
-      </footer>
+      {% include "partials/footer.html" %}
     </div>
   </body>
 </html>
