@@ -15,6 +15,8 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 * This bot streamlines the process of creating high-quality adult prompts, making prompt engineering faster, more accessible, and more efficient for AI image generation platforms.
 * Save or delete up to 5 prompts. This limit may be increased in the future.
 
+### Product site: [nsfw_prompt_generator_bot](https://ai-prompt-generator-telegram-bot-server.onrender.com)
+
 ### List of bot's comands
 1. /start - Getting started
 2. /help - Help with usage
