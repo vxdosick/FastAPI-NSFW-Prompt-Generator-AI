@@ -52,6 +52,20 @@ async def _create_checkout_url(user_id: str) -> str | None:
     return data.get("url")
 
 
+async def build_payment_keyboard(user_id: str) -> InlineKeyboardMarkup:
+    checkout_url = await _create_checkout_url(user_id)
+    stars_price = _stars_price()
+    buttons = []
+
+    if checkout_url:
+        buttons.append(InlineKeyboardButton("Stripe 💳", url=checkout_url))
+    buttons.append(
+        InlineKeyboardButton(f"Pay {stars_price} ⭐", callback_data=STARS_CALLBACK_DATA)
+    )
+
+    return InlineKeyboardMarkup([buttons])
+
+
 async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.type != ChatType.PRIVATE:
         return
@@ -61,19 +75,9 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     async with async_session_maker() as db:
         user = await get_or_create_user(user_id, db)
 
-    checkout_url = await _create_checkout_url(user_id)
     payment_content = _payment_content()
     price = _price_label()
     stars_price = _stars_price()
-    buttons = []
-
-    if checkout_url:
-        buttons.append(
-            InlineKeyboardButton("Stripe 💳", url=checkout_url)
-        )
-    buttons.append(
-        InlineKeyboardButton(f"Pay {stars_price} ⭐", callback_data=STARS_CALLBACK_DATA)
-    )
 
     await update.message.reply_text(
         f"Your balance 💎\n\n"
@@ -84,7 +88,7 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"<b>{html.escape(payment_content)}</b>.\n\n"
         f"Choose your payment method:",
         parse_mode="HTML",
-        reply_markup=InlineKeyboardMarkup([buttons]),
+        reply_markup=await build_payment_keyboard(user_id),
         disable_web_page_preview=True,
     )
 

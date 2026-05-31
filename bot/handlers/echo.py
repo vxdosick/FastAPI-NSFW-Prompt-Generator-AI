@@ -2,7 +2,6 @@
 import asyncio
 import html
 import json
-import httpx
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 from telegram.constants import ChatAction, ChatType
@@ -14,14 +13,13 @@ from db.database import async_session_maker
 
 # Utils
 from bot.utils.is_rate_limited import is_rate_limited
+from bot.handlers.balance import build_payment_keyboard
 from bot.handlers.prompts import cache_prompt_for_saving
 
 # Define tokens
 from core.config import (
     OPENAI_API_KEY,
     AI_MODEL,
-    PAYMENT_BOT_CREDITS,
-    SERVER_URL,
     SYSTEM_PROMPT,
 )
 
@@ -101,42 +99,12 @@ async def _release_busy(user_id: str) -> None:
         _busy_state.pop(user_id, None)
 
 
-async def _create_checkout_url(user_id: str) -> str | None:
-    if not SERVER_URL:
-        return None
-
-    try:
-        async with httpx.AsyncClient(timeout=15) as client:
-            response = await client.post(f"{SERVER_URL}/create-checkout-session/{user_id}")
-            response.raise_for_status()
-            data = response.json()
-    except (httpx.HTTPError, ValueError, KeyError):
-        return None
-
-    return data.get("url")
-
-
 async def _reply_out_of_credits(update: Update, user_id: str) -> None:
-    checkout_url = await _create_checkout_url(user_id)
-    credit_count = PAYMENT_BOT_CREDITS or "150"
-
-    if checkout_url:
-        await update.message.reply_text(
-            f"Oops! 😅 You're out of free credits.\n\n"
-            f"Want to unlock pure creative freedom without limits?\n"
-            f"Get <b>{html.escape(str(credit_count))} premium generations</b> "
-            f"right now for just €1.99! 🔥\n\n"
-            f"👉 <a href=\"{html.escape(checkout_url, quote=True)}\">"
-            f"Click here to buy {html.escape(str(credit_count))} Credits via Stripe</a>",
-            parse_mode="HTML",
-            disable_web_page_preview=True,
-        )
-        return
-
     await update.message.reply_text(
-        f"Oops! 😅 You're out of free credits.\n\n"
-        f"Want to unlock pure creative freedom without limits?\n"
-        f"Use /balance to get more premium generations 🔥"
+        "Oh... just when it was getting good? ❤️ You're out of credits.\n"
+        "Don't stop now — your hottest ideas are just one click away.\n\n"
+        "Unlock full access instantly:",
+        reply_markup=await build_payment_keyboard(user_id),
     )
 
 
