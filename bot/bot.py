@@ -37,11 +37,14 @@ from bot.handlers.unknown import unknown
 from bot.utils.maintenance import maintenance_gate
 
 # Define tokens
-from core.config import BOT_TOKEN
+from core.config import ACTIVE_BOT_TOKEN, USE_DEV_BOT
 
 # TB App creating
-bot = Bot(BOT_TOKEN)
-app = Application.builder().token(BOT_TOKEN).concurrent_updates(True).build()
+bot = Bot(ACTIVE_BOT_TOKEN)
+app = Application.builder().token(ACTIVE_BOT_TOKEN).concurrent_updates(True).build()
+
+if USE_DEV_BOT:
+    print("USE_DEV_BOT=true — running with DEV_BOT_TOKEN")
 
 # Maintenance gate (group -1 runs before all other handlers)
 app.add_handler(TypeHandler(Update, maintenance_gate), group=-1)

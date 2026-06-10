@@ -20,8 +20,8 @@ PROMPTS_CALLBACK_PREFIX = "prompts"
 _prompt_save_cache: dict[str, dict[str, str]] = {}
 
 _EMPTY_PROMPTS_TEXT = (
-    "You don't have any saved prompts yet 🙂\n\n"
-    "Generate a prompt and tap Save Prompt 🍓 under it."
+    "Nothing saved yet, love 🍓\n\n"
+    "Generate something hot and tap Save under it 💕"
 )
 
 
@@ -35,11 +35,10 @@ def _format_prompt_message(item: dict, position: int, total: int) -> str:
     title = html.escape(str(item.get("title", "Prompt")))
     prompt_text = html.escape(str(item.get("prompt", "")))
     return (
-        f"Your saved prompts 🍓\n"
-        f"You can save up to {MAX_SAVED_PROMPTS} prompts 😊\n\n"
+        f"Saved prompts 🍓 · up to {MAX_SAVED_PROMPTS}\n\n"
         f"<b>{title}</b> ({position + 1}/{total})\n\n"
         f"<code>{prompt_text}</code>\n\n"
-        f"Click on the prompt to copy it ⬆️"
+        f"Tap to copy ⬆️"
     )
 
 
@@ -127,7 +126,7 @@ async def prompts_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         saved_prompts = await get_saved_prompts(user_id, db)
 
         if not saved_prompts:
-            await query.answer("No saved prompts left.", show_alert=True)
+            await query.answer("Nothing left to show, love 🍓", show_alert=True)
             try:
                 await query.message.edit_text(_EMPTY_PROMPTS_TEXT, reply_markup=None)
             except BadRequest:
@@ -190,7 +189,7 @@ async def save_prompt_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     if not cached:
         await query.answer()
         await query.message.reply_text(
-            "This prompt is no longer available to save. Please generate it again. 🔄"
+            "That one's gone, love — generate it again 🔄"
         )
         return
 
@@ -204,8 +203,8 @@ async def save_prompt_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     if not was_saved:
         await query.answer()
         await query.message.reply_text(
-            f"You can save up to {MAX_SAVED_PROMPTS} prompts.\n\n"
-            "Open /prompts to view them. 📄"
+            f"Only {MAX_SAVED_PROMPTS} spots, love 🍓\n"
+            f"Open /prompts to make room 💕"
         )
         return
 
@@ -213,7 +212,7 @@ async def save_prompt_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     saved_title = saved_prompts[-1].get("title", "Prompt") if saved_prompts else "Prompt"
     await query.answer("Prompt saved 🍓", show_alert=False)
     await query.message.reply_text(
-        f"Saved as {html.escape(saved_title)} ✅\n\n"
-        f"Open /prompts to view your saved prompts.",
+        f"Saved as {html.escape(saved_title)} ✅\n"
+        f"/prompts whenever you want it back 💕",
         parse_mode="HTML",
     )

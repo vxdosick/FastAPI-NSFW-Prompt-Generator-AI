@@ -81,12 +81,12 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         f"Your balance 💎\n\n"
-        f"💰 <b>Available credits:</b> {user.credits}\n\n"
-        f"Stripe payment: <b>{html.escape(price)}</b> = "
-        f"<b>{html.escape(payment_content)}</b>.\n"
-        f"Stars payment: <b>{stars_price} ⭐</b> = "
-        f"<b>{html.escape(payment_content)}</b>.\n\n"
-        f"Choose your payment method:",
+        f"💕 <b>Credits:</b> {user.credits}\n\n"
+        f"Stripe — <b>{html.escape(price)}</b> → "
+        f"<b>{html.escape(payment_content)}</b>\n"
+        f"Stars — <b>{stars_price} ⭐</b> → "
+        f"<b>{html.escape(payment_content)}</b>\n\n"
+        f"Pick how you want to pay, love ❤️",
         parse_mode="HTML",
         reply_markup=await build_payment_keyboard(user_id),
         disable_web_page_preview=True,
@@ -107,7 +107,7 @@ async def stars_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.message.reply_invoice(
         title=payment_content,
-        description=f"Unlock {payment_content} with Telegram Stars.",
+        description=f"More steamy prompts for you — {payment_content} ✨",
         payload=f"stars:{user_id}:{credit_pack}",
         provider_token="",
         currency="XTR",
@@ -131,7 +131,7 @@ async def stars_pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE)
     )
 
     if not is_valid:
-        await query.answer(ok=False, error_message="Invalid Stars payment payload.")
+        await query.answer(ok=False, error_message="Something's off with this payment, love 💕")
         return
 
     await query.answer(ok=True)
@@ -158,7 +158,8 @@ async def stars_successful_payment(update: Update, context: ContextTypes.DEFAULT
 
     if not is_valid:
         await update.message.reply_text(
-            "Payment received, but I couldn't verify it automatically. Please contact support."
+            "Got your payment, love — but I couldn't confirm it 😅\n"
+            "Please /contacts and we'll sort it out 💕"
         )
         return
 
@@ -167,6 +168,7 @@ async def stars_successful_payment(update: Update, context: ContextTypes.DEFAULT
         await add_credits(str(update.effective_user.id), credit_pack, db)
 
     await update.message.reply_text(
-        f"Payment successful! ⭐\n\n"
-        f"{payment_content} have been added to your balance 💎"
+        f"Thank you... ⭐\n\n"
+        f"{payment_content} added to your balance 💎\n"
+        f"Can't wait to see what you'll create 😈"
     )

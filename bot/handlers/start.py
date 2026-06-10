@@ -22,13 +22,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = await get_or_create_user(user_id, db)
 
     await update.message.reply_text(
-        f"Hey! 😈\n"
-        f"<b>Welcome to NSFW Prompt Generator AI.</b>\n\n"
-        f"Send me any spicy idea, and I'll turn it into a hyper-detailed, "
-        f"uncensored prompt for Flux, Pony, SDXL, or Stable Diffusion.\n\n"
-        f"💰 <b>Your Balance:</b> {user.credits} free credits\n\n"
-        f"🔥 <b>Try it right now!</b> Tap to copy this example, paste it into "
-        f"the chat and send:\n\n"
+        f"Hey... you came 💕\n\n"
+        f"<b>NSFW Prompt Generator AI</b> — whisper me a fantasy, "
+        f"I'll dress it up for Flux, Pony, SDXL & more 😈\n\n"
+        f"💎 <b>Credits:</b> {user.credits}\n\n"
+        f"Try me — tap, copy, send:\n"
         f"<code>{_START_EXAMPLE_PROMPT}</code>",
         parse_mode="HTML",
     )

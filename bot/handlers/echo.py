@@ -72,9 +72,8 @@ _busy_lock = asyncio.Lock()
 _busy_state: dict[str, dict] = {}
 
 _BUSY_PLEASE_WAIT = (
-    "Hold on a sec 🙂 I'm still finishing your previous prompt.\n\n"
-    "I won't process this new message on purpose — when you get the result above, "
-    "just send your next idea again 💦"
+    "One sec, love... still on your last one 💕\n"
+    "Send the next idea when it's done 😊"
 )
 
 
@@ -101,9 +100,8 @@ async def _release_busy(user_id: str) -> None:
 
 async def _reply_out_of_credits(update: Update, user_id: str) -> None:
     await update.message.reply_text(
-        "Oh... just when it was getting good? ❤️ You're out of credits.\n"
-        "Don't stop now — your hottest ideas are just one click away.\n\n"
-        "Unlock full access instantly:",
+        "Oh no... credits ran out right when it was getting fun ❤️\n"
+        "Top up and we keep going — one tap:",
         reply_markup=await build_payment_keyboard(user_id),
     )
 
@@ -139,17 +137,18 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # 2) Length check — only meaningful for a brand-new request.
         if len(update.message.text) > 800:
             await update.message.reply_text(
-                f"Oops! 😅 Your message is a bit too long (over 800 characters).\n\n"
-                f"Please keep it under 800 characters and try again 💦\n"
-                f"(Tip: Focus on key details like character, pose, style, and vibe!)")
+                "That's a lot at once, love 😅\n"
+                "Keep it under 800 chars — scene, pose, mood — then send again 💕"
+            )
             return
 
         # 3) Soft rate limiter (separate from busy-check; protects against
         # rapid-fire requests AFTER a previous one already finished).
         if is_rate_limited(user_id):
             await update.message.reply_text(
-                f"Please take a short pause between messages — I need a moment to keep up 🙂\n\n"
-                f"Wait a few seconds, then try again 💦")
+                "Slow down a tiny bit for me? 💕\n"
+                "Few seconds, then try again..."
+            )
             return
 
         async with async_session_maker() as db:
@@ -190,16 +189,18 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             raw = completion.choices[0].message.content
             if not raw or not raw.strip():
                 await update.message.reply_text(
-                    f"Oops! 😅 Something went wrong.\n\n"
-                    f"Please try again in a moment 💦")
+                    "Something hiccuped on my side 😅\n"
+                    "Try again in a moment, love 💕"
+                )
                 return
 
             try:
                 data = json.loads(raw)
             except json.JSONDecodeError:
                 await update.message.reply_text(
-                    f"Oops! 😅 Something went wrong.\n\n"
-                    f"Please try again in a moment 💦")
+                    "Something hiccuped on my side 😅\n"
+                    "Try again in a moment, love 💕"
+                )
                 return
 
             is_error = bool(data.get("error"))
@@ -210,11 +211,10 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             if is_error or not prompt:
                 await update.message.reply_text(
-                    f"Oops! 😅 I couldn't process that request.\n\n"
-                    f"It looks like you might have asked for something else entirely (not a prompt request), "
-                    f"or it involved minors/extreme illegal content — that's a no-go.\n\n"
-                    f"Please describe a fantasy for adult characters (18+ only) and keep it focused on a hot NSFW prompt 😉\n\n"
-                    f"Try again with something spicy and clear! 💦")
+                    "I can't do that one, love 😅\n\n"
+                    "Adults only (18+), and it needs to be a real prompt idea.\n"
+                    "Paint me a spicy scene — I'll make it beautiful 💕"
+                )
                 return
 
             user.credits -= 1
@@ -222,12 +222,9 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await db.refresh(user)
 
             await update.message.reply_text(
-                f"Here we go! 😏🔥\n\n"
-                f"Your uncensored NSFW prompt is ready and supercharged for epic results!\n"
-                f"Copy it below and paste into your favorite model (Flux, Pony XL, "
-                f"Illustrious, RealVisXL, SDXL, Midjourney, Grok & more) 😉\n\n"
-                f"Prompt: ⬇️💦\n\n"
-                f"<code>{html.escape(prompt)}</code>",
+                f"For you... 😏💕\n\n"
+                f"<code>{html.escape(prompt)}</code>\n\n"
+                f"Copy & paste into Flux, Pony, SDXL & more 🔥",
                 parse_mode="HTML",
                 reply_markup=InlineKeyboardMarkup(
                     [

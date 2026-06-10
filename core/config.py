@@ -8,6 +8,17 @@ load_dotenv()
 # Define variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_LINK = os.getenv("BOT_LINK")
+
+DEV_BOT_TOKEN = os.getenv("DEV_BOT_TOKEN")
+DEV_BOT_LINK = os.getenv("DEV_BOT_LINK")
+DEV_SERVER_URL = os.getenv("DEV_SERVER_URL")
+
+_use_dev_raw = os.getenv("USE_DEV_BOT", "").strip().lower()
+USE_DEV_BOT = _use_dev_raw in ("1", "true", "yes", "on")
+
+ACTIVE_BOT_TOKEN = DEV_BOT_TOKEN if USE_DEV_BOT else BOT_TOKEN
+if USE_DEV_BOT and not DEV_BOT_TOKEN:
+    raise RuntimeError("USE_DEV_BOT=true but DEV_BOT_TOKEN is not set in .env")
 # Support username for links (e.g. @yourname) — not a full URL
 SUPPORT_TELEGRAM = os.getenv("SUPPORT_TELEGRAM")
 

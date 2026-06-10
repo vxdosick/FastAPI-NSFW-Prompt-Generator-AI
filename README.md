@@ -27,6 +27,7 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
     - [x] Add a script for quick `Webhook` integration
     - [x] Implement a section to showcase new features and updates (`/whats_new` handler)
     - [x] A new column, `is_blocked`, has been added to the database
+    - [x] All handler texts have been rewritten in a `warmer` and more `concise` style
 
 **Planned**
 - xxxx-xx-xx:
@@ -112,6 +113,16 @@ pip freeze > requirements.txt
 ```bash
 python -m core.set_webhook
 ```
+
+9. Dev bot (local ngrok — prod bot on Render is untouched)
+
+```bash
+# .env: USE_DEV_BOT=true, DEV_SERVER_URL=your ngrok https URL
+python -m core.dev_set_webhook
+uvicorn server.main:server --reload
+```
+
+Open **DEV_BOT_LINK** in Telegram (not the prod bot). Set `USE_DEV_BOT=false` before deploy.
 
 ### VERY IMPORTANT
 

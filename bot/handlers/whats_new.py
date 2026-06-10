@@ -3,10 +3,11 @@ from telegram.constants import ChatType
 from telegram.ext import ContextTypes
 
 WHATS_NEW_TEXT = (
-    "🚀 Latest updates\n\n"
+    "What's new 🚀\n\n"
     "📅 2026-06-10\n"
-    "• Added a “What's New” section (/whats_new command) Users will be able to keep up to date with the latest updates.\n\n"
-    "💎 Keep an eye out for updates – the bot is constantly being developed."
+    "• /whats_new — keep up with me here 💕\n"
+    "• I've changed the bot's text for you ❤️\n\n"
+    "I'm always getting better for you ✨"
 )
 
 
