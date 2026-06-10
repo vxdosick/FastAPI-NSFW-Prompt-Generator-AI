@@ -2,7 +2,7 @@
 
 ### Bot name: [@nsfw_prompt_generator_bot](https://t.me/nsfw_prompt_generator_bot)
 
-This bot has an official version.
+This bot has an official version on Telegram.
 
 ### Functionality / Features
 
@@ -23,14 +23,17 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 
 - 2026-06-10:
     - [x] A “Roadmap” section has been added to `README.md` to track progress and the latest features
-    - [x] Implement Maintenance Mode
+    - [x] Implement Maintenance Mode (to temporarily disable the bot)
     - [x] Add a script for quick `Webhook` integration
     - [x] Implement a section to showcase new features and updates (`/whats_new` handler)
 
 **Planned**
 
+- [ ] Upgrade the licence for this product
+- [ ] Refine push notifications for different scenarios
+- [ ] Improve the system prompt and make it more straightforward
 
-### Product site: [nsfw_prompt_generator_bot](https://ai-prompt-generator-telegram-bot-server.onrender.com)
+- Keep an eye out for new feature ideas, or send your own suggestions to my Telegram – [@velvetmommy](http://t.me/velvetmommy). I’d be happy to hear any suggestions
 
 ### List of bot's comands
 
@@ -38,8 +41,9 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 2. /help - Help with usage
 3. /balance - Check credits and buy generations ❤️
 4. /prompts - View saved prompts 🍓
-5. /terms - Privacy Policy and Refund Policy
-6. /contacts - Contact the developer or report a bug 👨‍💻
+5. /whats_new - Latest updates and changelog 🚀
+6. /terms - Privacy Policy and Refund Policy
+7. /contacts - Contact the developer or report a bug 👨‍💻
 
 ### Main stack
 
@@ -102,12 +106,14 @@ ngrok http 8000
 pip freeze > requirements.txt
 ```
 
-1. Webhook - Telegram Initialisation
+8. Register Telegram webhook (uses `BOT_TOKEN` and `SERVER_URL` from `.env`)
 
 ```bash
-curl -F "url=(SERVER_URL)/tg-webhook" https://api.telegram.org/bot(BOT_TOKEN)/setWebhook
+python -m core.set_webhook
 ```
 
 ### VERY IMPORTANT
 
 Before using this software, please read the [LICENSE](./LICENSE). Thank you – let’s make life a little bit easier for programmers ❤️
+
+### Product site: [nsfw_prompt_generator_bot](https://ai-prompt-generator-telegram-bot-server.onrender.com)

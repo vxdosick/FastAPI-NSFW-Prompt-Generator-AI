@@ -1,35 +1,53 @@
-# Imports
-import subprocess
+from __future__ import annotations
+
+import json
 import sys
+
+import httpx
 
 from core.config import BOT_TOKEN, SERVER_URL
 
+ALLOWED_UPDATES = [
+    "message",
+    "callback_query",
+    "pre_checkout_query",
+    "my_chat_member",
+]
+
+
+def webhook_url() -> str:
+    return f"{SERVER_URL.strip().rstrip('/')}/tg-webhook"
+
+
+def set_webhook() -> dict:
+    if not BOT_TOKEN or not SERVER_URL:
+        raise RuntimeError("BOT_TOKEN and SERVER_URL must be set in .env")
+
+    api_url = f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook"
+    payload = {
+        "url": webhook_url(),
+        "allowed_updates": json.dumps(ALLOWED_UPDATES),
+    }
+
+    with httpx.Client(timeout=30) as client:
+        response = client.post(api_url, data=payload)
+        response.raise_for_status()
+        return response.json()
+
 
 def main() -> None:
-    if not BOT_TOKEN or not SERVER_URL:
-        print("BOT_TOKEN and SERVER_URL must be set in .env", file=sys.stderr)
+    try:
+        data = set_webhook()
+    except RuntimeError as exc:
+        print(exc, file=sys.stderr)
+        sys.exit(1)
+    except httpx.HTTPError as exc:
+        print(f"setWebhook failed: {exc}", file=sys.stderr)
         sys.exit(1)
 
-    webhook_url = f"{SERVER_URL.strip().rstrip('/')}/tg-webhook"
-    api_url = f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook"
-
-    result = subprocess.run(
-        [
-            "curl",
-            "-F",
-            f"url={webhook_url}",
-            "-F",
-            'allowed_updates=["message","my_chat_member"]',
-            api_url,
-        ],
-        capture_output=True,
-        text=True,
-    )
-    if result.stdout:
-        print(result.stdout, end="")
-    if result.stderr:
-        print(result.stderr, end="", file=sys.stderr)
-    sys.exit(result.returncode)
+    print(json.dumps(data, indent=2))
+    if not data.get("ok"):
+        sys.exit(1)
 
 
 if __name__ == "__main__":

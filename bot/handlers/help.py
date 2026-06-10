@@ -20,6 +20,7 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"/help — This help menu\n"
             f"/balance — Check your credits and buy more generations\n"
             f"/prompts — View your saved prompts\n"
+            f"/whats_new — Latest updates and changelog 🚀\n"
             f"/contacts — Report an issue or message support\n\n"
             f"🔹 Tip:\n"
             f"Be as specific (or as wild) as you want — I handle everything without judgment 💦\n\n"

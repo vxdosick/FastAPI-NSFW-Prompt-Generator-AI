@@ -37,7 +37,7 @@ async def lifespan(server: FastAPI):
 # FastAPI server creating
 server = FastAPI(lifespan=lifespan)
 
-# HTML tenplates and static files connecting
+# HTML templates and static files connecting
 templates = Jinja2Templates(directory="server/templates")
 server.mount("/static", StaticFiles(directory="server/static"), name="static")
 
