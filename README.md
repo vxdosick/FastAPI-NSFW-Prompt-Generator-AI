@@ -23,11 +23,12 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
 
 - 2026-06-10:
     - [x] A “Roadmap” section has been added to `README.md` to track progress and the latest features
+    - [x] Implement Maintenance Mode
 
 **Planned**
 
 - [ ] Implement a section to showcase new features and updates (`/whats_new` handler)
-- [ ] Implement Maintenance Mode
+- [ ] Add a script for quick `Webhook` integration
 
 ### Product site: [nsfw_prompt_generator_bot](https://ai-prompt-generator-telegram-bot-server.onrender.com)
 

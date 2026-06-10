@@ -61,6 +61,9 @@ PAYMENT_BOT_CREDITS = os.getenv("PAYMENT_BOT_CREDITS")
 OWNER_TELEGRAM_ID = os.getenv("OWNER_TELEGRAM_ID")
 OWNER_START_CREDITS = os.getenv("OWNER_START_CREDITS")
 
+_maintenance_raw = os.getenv("MAINTENANCE_MODE", "").strip().lower()
+MAINTENANCE_MODE = _maintenance_raw in ("1", "true", "yes", "on")
+
 _max_saved_raw = os.getenv("MAX_SAVED_PROMPTS")
 MAX_SAVED_PROMPTS = (
     int(_max_saved_raw.strip())

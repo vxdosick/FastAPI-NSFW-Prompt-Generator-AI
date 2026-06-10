@@ -1,13 +1,14 @@
 # Imports
+from telegram import Bot, Update
 from telegram.ext import (
     Application,
     CallbackQueryHandler,
     CommandHandler,
     MessageHandler,
     PreCheckoutQueryHandler,
+    TypeHandler,
     filters,
 )
-from telegram import Bot
 
 # Handlers
 from bot.handlers.start import start
@@ -30,6 +31,7 @@ from bot.handlers.prompts import (
 )
 from bot.handlers.echo import echo
 from bot.handlers.unknown import unknown
+from bot.utils.maintenance import maintenance_gate
 
 # Define tokens
 from core.config import BOT_TOKEN
@@ -37,6 +39,9 @@ from core.config import BOT_TOKEN
 # TB App creating
 bot = Bot(BOT_TOKEN)
 app = Application.builder().token(BOT_TOKEN).concurrent_updates(True).build()
+
+# Maintenance gate (group -1 runs before all other handlers)
+app.add_handler(TypeHandler(Update, maintenance_gate), group=-1)
 
 # Define TB handlers
 app.add_handler(CommandHandler("start", start))
