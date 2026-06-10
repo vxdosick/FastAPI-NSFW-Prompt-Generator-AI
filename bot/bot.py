@@ -22,6 +22,7 @@ from bot.handlers.balance import (
 )
 from bot.handlers.terms import terms
 from bot.handlers.contacts import contacts
+from bot.handlers.whats_new import whats_new
 from bot.handlers.prompts import (
     PROMPTS_CALLBACK_PREFIX,
     SAVE_PROMPT_CALLBACK_PREFIX,
@@ -50,6 +51,7 @@ app.add_handler(CommandHandler("balance", balance))
 app.add_handler(CommandHandler("terms", terms))
 app.add_handler(CommandHandler("contacts", contacts))
 app.add_handler(CommandHandler("prompts", prompts))
+app.add_handler(CommandHandler("whats_new", whats_new))
 app.add_handler(CallbackQueryHandler(stars_payment, pattern=f"^{STARS_CALLBACK_DATA}$"))
 app.add_handler(CallbackQueryHandler(save_prompt_callback, pattern=f"^{SAVE_PROMPT_CALLBACK_PREFIX}:"))
 app.add_handler(CallbackQueryHandler(prompts_callback, pattern=f"^{PROMPTS_CALLBACK_PREFIX}:"))
