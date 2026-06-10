@@ -26,14 +26,15 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
     - [x] Implement Maintenance Mode (to temporarily disable the bot)
     - [x] Add a script for quick `Webhook` integration
     - [x] Implement a section to showcase new features and updates (`/whats_new` handler)
+    - [x] A new column, `is_blocked`, has been added to the database
 
 **Planned**
+- xxxx-xx-xx:
+    - [ ] Upgrade the licence for this product
+    - [ ] Refine push notifications for different scenarios
+    - [ ] Improve the system prompt and make it more straightforward
 
-- [ ] Upgrade the licence for this product
-- [ ] Refine push notifications for different scenarios
-- [ ] Improve the system prompt and make it more straightforward
-
-- Keep an eye out for new feature ideas, or send your own suggestions to my Telegram – [@velvetmommy](http://t.me/velvetmommy). I’d be happy to hear any suggestions
+Keep an eye out for new feature ideas, or send your own suggestions to my Telegram – [@velvetmommy](http://t.me/velvetmommy). I’d be happy to hear any suggestions
 
 ### List of bot's comands
 

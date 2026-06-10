@@ -33,6 +33,16 @@ async def create_user(telegram_id: str, db: AsyncSession):
     return user
 
 
+async def set_user_blocked(telegram_id: str, is_blocked: bool, db: AsyncSession) -> bool:
+    user = await get_user(telegram_id, db)
+    if user is None:
+        return False
+    user.is_blocked = is_blocked
+    await db.commit()
+    await db.refresh(user)
+    return True
+
+
 async def get_or_create_user(user_id: str, db: AsyncSession):
     user = await get_user(user_id, db)
     if user:

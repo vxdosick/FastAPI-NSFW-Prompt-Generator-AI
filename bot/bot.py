@@ -3,6 +3,7 @@ from telegram import Bot, Update
 from telegram.ext import (
     Application,
     CallbackQueryHandler,
+    ChatMemberHandler,
     CommandHandler,
     MessageHandler,
     PreCheckoutQueryHandler,
@@ -30,6 +31,7 @@ from bot.handlers.prompts import (
     prompts_callback,
     save_prompt_callback,
 )
+from bot.handlers.chat_member import my_chat_member
 from bot.handlers.echo import echo
 from bot.handlers.unknown import unknown
 from bot.utils.maintenance import maintenance_gate
@@ -52,6 +54,7 @@ app.add_handler(CommandHandler("terms", terms))
 app.add_handler(CommandHandler("contacts", contacts))
 app.add_handler(CommandHandler("prompts", prompts))
 app.add_handler(CommandHandler("whats_new", whats_new))
+app.add_handler(ChatMemberHandler(my_chat_member, ChatMemberHandler.MY_CHAT_MEMBER))
 app.add_handler(CallbackQueryHandler(stars_payment, pattern=f"^{STARS_CALLBACK_DATA}$"))
 app.add_handler(CallbackQueryHandler(save_prompt_callback, pattern=f"^{SAVE_PROMPT_CALLBACK_PREFIX}:"))
 app.add_handler(CallbackQueryHandler(prompts_callback, pattern=f"^{PROMPTS_CALLBACK_PREFIX}:"))
