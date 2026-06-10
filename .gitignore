@@ -15,6 +15,9 @@ __pycache__/
 *$py.class
 .tmp_pycache/
 
+# One-off local broadcast scripts (not for the repo)
+push_messages/
+
 # Logs
 *.log
 
