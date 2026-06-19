@@ -11,6 +11,13 @@ def active_bot_link() -> str:
     return (raw or "").strip()
 
 
+def bot_start_url(param: str) -> str | None:
+    link = active_bot_link()
+    if not link:
+        return None
+    return f"{link}?start={param}"
+
+
 def open_bot_line() -> str:
     link = active_bot_link()
     if link:

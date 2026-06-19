@@ -14,6 +14,7 @@ from db.db_ops import delete_saved_prompt, get_saved_prompts, save_prompt
 from db.database import async_session_maker
 
 SAVE_PROMPT_CALLBACK_PREFIX = "save_prompt"
+SAVE_START_PREFIX = "save_"
 PROMPTS_CALLBACK_PREFIX = "prompts"
 
 _prompt_save_cache: dict[str, dict[str, str]] = {}
@@ -24,10 +25,35 @@ _EMPTY_PROMPTS_TEXT = (
 )
 
 
-def cache_prompt_for_saving(prompt: str, title: str = "") -> str:
+def cache_prompt_token(prompt: str, title: str = "") -> str:
     token = secrets.token_urlsafe(8)
     _prompt_save_cache[token] = {"prompt": prompt, "title": title}
+    return token
+
+
+def cache_prompt_for_saving(prompt: str, title: str = "") -> str:
+    token = cache_prompt_token(prompt, title)
     return f"{SAVE_PROMPT_CALLBACK_PREFIX}:{token}"
+
+
+async def save_prompt_from_token(user_id: str, token: str) -> tuple[str | None, str]:
+    """Returns (saved_title, status) where status is saved | full | expired."""
+    cached = _prompt_save_cache.get(token)
+    if not cached:
+        return None, "expired"
+
+    prompt = cached.get("prompt", "")
+    title = cached.get("title", "")
+
+    async with async_session_maker() as db:
+        was_saved, saved_prompts = await save_prompt(user_id, prompt, title, db)
+
+    if not was_saved:
+        return None, "full"
+
+    _prompt_save_cache.pop(token, None)
+    saved_title = saved_prompts[-1].get("title", "Prompt") if saved_prompts else "Prompt"
+    return saved_title, "saved"
 
 
 def _format_prompt_message(item: dict, position: int, total: int) -> str:
@@ -181,22 +207,17 @@ async def save_prompt_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         return
 
     _, _, token = (query.data or "").partition(":")
-    cached = _prompt_save_cache.get(token)
-    if not cached:
+    user_id = str(query.from_user.id)
+    saved_title, status = await save_prompt_from_token(user_id, token)
+
+    if status == "expired":
         await query.answer()
         await query.message.reply_text(
             "That one's gone, love — generate it again 🔄"
         )
         return
 
-    prompt = cached.get("prompt", "")
-    title = cached.get("title", "")
-
-    user_id = str(query.from_user.id)
-    async with async_session_maker() as db:
-        was_saved, saved_prompts = await save_prompt(user_id, prompt, title, db)
-
-    if not was_saved:
+    if status == "full":
         await query.answer()
         await query.message.reply_text(
             f"Only {MAX_SAVED_PROMPTS} spots, love 🍓\n"
@@ -204,8 +225,6 @@ async def save_prompt_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         return
 
-    _prompt_save_cache.pop(token, None)
-    saved_title = saved_prompts[-1].get("title", "Prompt") if saved_prompts else "Prompt"
     await query.answer("Prompt saved 🍓", show_alert=False)
     await query.message.reply_text(
         f"Saved as {html.escape(saved_title)} ✅\n"

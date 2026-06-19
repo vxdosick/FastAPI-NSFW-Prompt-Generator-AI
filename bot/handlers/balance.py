@@ -12,7 +12,10 @@ from db.database import async_session_maker
 # Define tokens
 from core.config import PAYMENT_BOT_CREDITS, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_STARS_PRICE, SERVER_URL
 
+from bot.utils.guest_reply import bot_start_url
+
 STARS_CALLBACK_DATA = "buy_stars"
+STARS_START_PARAM = "stars"
 
 
 def _price_label() -> str:
@@ -51,18 +54,46 @@ async def _create_checkout_url(user_id: str) -> str | None:
     return data.get("url")
 
 
-async def build_payment_keyboard(user_id: str) -> InlineKeyboardMarkup:
+async def build_payment_keyboard(user_id: str, *, guest: bool = False) -> InlineKeyboardMarkup:
     checkout_url = await _create_checkout_url(user_id)
     stars_price = _stars_price()
     buttons = []
 
     if checkout_url:
         buttons.append(InlineKeyboardButton("Stripe 💳", url=checkout_url))
-    buttons.append(
-        InlineKeyboardButton(f"Pay {stars_price} ⭐", callback_data=STARS_CALLBACK_DATA)
-    )
+
+    if guest:
+        stars_url = bot_start_url(STARS_START_PARAM)
+        if stars_url:
+            buttons.append(
+                InlineKeyboardButton(f"Pay {stars_price} ⭐", url=stars_url)
+            )
+    else:
+        buttons.append(
+            InlineKeyboardButton(f"Pay {stars_price} ⭐", callback_data=STARS_CALLBACK_DATA)
+        )
 
     return InlineKeyboardMarkup([buttons])
+
+
+async def send_stars_invoice(
+    context: ContextTypes.DEFAULT_TYPE,
+    chat_id: int,
+    user_id: str,
+) -> None:
+    credit_pack = _credit_pack()
+    payment_content = _payment_content()
+    stars_price = _stars_price()
+
+    await context.bot.send_invoice(
+        chat_id=chat_id,
+        title=payment_content,
+        description=f"More steamy prompts for you — {payment_content} ✨",
+        payload=f"stars:{user_id}:{credit_pack}",
+        provider_token="",
+        currency="XTR",
+        prices=[LabeledPrice(payment_content, stars_price)],
+    )
 
 
 async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -97,18 +128,7 @@ async def stars_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     user_id = str(query.from_user.id)
-    credit_pack = _credit_pack()
-    payment_content = _payment_content()
-    stars_price = _stars_price()
-
-    await query.message.reply_invoice(
-        title=payment_content,
-        description=f"More steamy prompts for you — {payment_content} ✨",
-        payload=f"stars:{user_id}:{credit_pack}",
-        provider_token="",
-        currency="XTR",
-        prices=[LabeledPrice(payment_content, stars_price)],
-    )
+    await send_stars_invoice(context, query.message.chat_id, user_id)
 
 
 async def stars_pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE):

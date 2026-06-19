@@ -108,7 +108,7 @@ async def try_handle_guest_command(
             f"<b>{html.escape(payment_content)}</b>\n\n"
             f"Pick how you want to pay, love ❤️",
             parse_mode="HTML",
-            reply_markup=await build_payment_keyboard(user_id),
+            reply_markup=await build_payment_keyboard(user_id, guest=True),
         )
         return True
 

@@ -15,8 +15,8 @@ from db.database import async_session_maker
 # Utils
 from bot.handlers.balance import build_payment_keyboard
 from bot.handlers.guest_commands import try_handle_guest_command
-from bot.handlers.prompts import cache_prompt_for_saving
-from bot.utils.guest_reply import active_bot_link, send_reply_message
+from bot.handlers.prompts import cache_prompt_token, SAVE_START_PREFIX
+from bot.utils.guest_reply import active_bot_link, bot_start_url, send_reply_message
 from bot.utils.is_rate_limited import is_rate_limited
 
 # Define tokens
@@ -118,19 +118,30 @@ async def _reply_out_of_credits(
         context,
         "Oh no... credits ran out right when it was getting fun ❤️\n"
         "Top up and we keep going — one tap:",
-        reply_markup=await build_payment_keyboard(user_id),
+        reply_markup=await build_payment_keyboard(
+            user_id, guest=bool(message.guest_query_id)
+        ),
     )
 
 
 def _prompt_reply_markup(message, prompt: str, title: str) -> InlineKeyboardMarkup:
-    rows = [
-        [
-            InlineKeyboardButton(
-                "Save Prompt 🍓",
-                callback_data=cache_prompt_for_saving(prompt, title),
-            )
-        ]
-    ]
+    token = cache_prompt_token(prompt, title)
+    rows = []
+
+    if message.guest_query_id:
+        save_url = bot_start_url(f"{SAVE_START_PREFIX}{token}")
+        if save_url:
+            rows.append([InlineKeyboardButton("Save Prompt 🍓", url=save_url)])
+    else:
+        rows.append(
+            [
+                InlineKeyboardButton(
+                    "Save Prompt 🍓",
+                    callback_data=f"save_prompt:{token}",
+                )
+            ]
+        )
+
     bot_link = active_bot_link()
     if message.guest_query_id and bot_link:
         rows.append(
@@ -314,8 +325,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             save_hint = ""
             if message.guest_query_id:
                 save_hint = (
-                    "\n\n<i>Tap Save 🍓 if the button works — "
-                    "or open me privately to keep favorites 💕</i>"
+                    "\n\n<i>Tap Save 🍓 — I'll open privately and keep it for you 💕</i>"
                 )
 
             await send_reply_message(
