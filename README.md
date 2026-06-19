@@ -1,21 +1,243 @@
-# NSFW Prompt Generator AI
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6d28d9,100:d946ef&height=220&section=header&text=NSFW%20Prompt%20Generator%20AI&fontSize=38&fontColor=f6f4ff&animation=fadeIn&fontAlignY=30&desc=Uncensored%20AI%20prompts%20in%20Telegram%20—%20seconds%2C%20not%20hours&descAlignY=47&descSize=16&descAlign=50"/>
+</p>
 
-### Bot name: [@nsfw_prompt_generator_bot](https://t.me/nsfw_prompt_generator_bot)
+<p align="center">
+  <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Open%20in%20Telegram-@nsfw_prompt_generator_bot-6d28d9?style=for-the-badge&logo=telegram&logoColor=f6f4ff" alt="Telegram bot"/>
+  </a>
+  <a href="https://nsfwprompts.app/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Live%20Site-nsfwprompts.app-d946ef?style=for-the-badge&logo=googlechrome&logoColor=f6f4ff" alt="Live site"/>
+  </a>
+  <a href="https://nsfwprompts.app/generator" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Web%20App-Coming%20soon-a6a3b8?style=for-the-badge&logo=react&logoColor=f6f4ff" alt="Web app coming soon"/>
+  </a>
+</p>
 
-This bot has an official version on Telegram.
+<p align="center">
+  <img src="https://img.shields.io/badge/users-250%2B-f6f4ff?style=flat-square&labelColor=06060a" alt="250+ users"/>
+  <img src="https://img.shields.io/badge/retention-50%25%20return-f6f4ff?style=flat-square&labelColor=06060a" alt="50% return"/>
+  <img src="https://img.shields.io/badge/free%20start-5%20generations-f6f4ff?style=flat-square&labelColor=06060a" alt="5 free generations"/>
+  <img src="https://img.shields.io/badge/18%2B-adults%20only-f6f4ff?style=flat-square&labelColor=06060a" alt="18+ only"/>
+</p>
 
-### Functionality / Features
+---
 
-NSFW Prompt Generator AI is an AI-powered assistant designed to generate detailed prompts for adult-oriented image generation models. Key features include:
+**Built by <a href="https://t.me/vxdosick" target="_blank" rel="noopener noreferrer">vxdosick</a>** — I build web products, Telegram bots, and AI integrations.
 
-- AI-powered Prompt Generation – create structured, high-detail prompts based on user descriptions.
-- Model Optimization – prompts are optimized for Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok-2 and other compatible models.
-- Unrestricted Creative Input – supports explicit, uncensored prompt construction according to user requests.
-- Ready-to-Use Output – generates copy-ready prompts for seamless integration into image generation workflows.
-- Fast & Lightweight – simple interface without complex dashboards or unnecessary steps.
-- Free Trial Access – new users receive a limited number of free generations to explore functionality.
-- This bot streamlines the process of creating high-quality adult prompts, making prompt engineering faster, more accessible, and more efficient for AI image generation platforms.
-- Save or delete up to 5 prompts. This limit may be increased in the future.
+Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, **SDXL**, **Midjourney** and more — right inside Telegram. No prompt-engineering rabbit holes, no complex dashboards. Describe your scene, copy the result, generate.
+
+**Try it now:** <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">@nsfw_prompt_generator_bot</a> · **Site:** <a href="https://nsfwprompts.app/" target="_blank" rel="noopener noreferrer">nsfwprompts.app</a> · **Web app** — coming soon (same product, outside Telegram)
+
+---
+
+## Preview
+
+<p align="center">
+  <img src="images/hero_img.png" alt="NSFW Prompt Generator AI — Telegram bot preview" width="720"/>
+</p>
+
+<p align="center"><em>One message in → polished, uncensored, model-specific prompt out.</em></p>
+
+---
+
+## At a glance
+
+| | |
+|---|---|
+| **What** | AI Telegram bot that writes detailed, uncensored image prompts |
+| **For** | Creators using Flux, Pony, SDXL, Midjourney, Grok-2, ComfyUI, A1111 |
+| **Why** | Skip tag wrangling — get pro-level prompts in ~3 seconds |
+| **Start** | 5 free generations, no card · top up via Stripe or Stars in `/balance` |
+
+---
+
+## Metrics
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=rect&color=0:06060a,50:6d28d9,100:d946ef&height=120&section=header&text=250%2B%20active%20users%20%7C%2050%25%20come%20back&fontSize=22&fontColor=f6f4ff&fontAlignY=50"/>
+</p>
+
+<p align="center">
+  <strong>250+</strong> users on the bot · <strong>50%</strong> return for another session · <strong>5</strong> free gens for every newcomer · <strong>7+</strong> image models supported
+</p>
+
+---
+
+## Features
+
+- **AI prompt generation** — one plain-language line → structured, high-detail, uncensored prompt (lighting, lens, mood, composition included)
+- **Model-tuned output** — syntax optimized for Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok-2 and SD workflows
+- **Copy-ready in one tap** — paste straight into your image pipeline
+- **Save favorites** — store and browse up to 5 prompts (`/prompts`; limit may grow)
+- **Credits & balance** — free trial, then Stripe checkout or Telegram Stars inside the bot
+- **Private by design** — no names, no emails; only what’s needed to run credits and generations
+- **Maintenance mode** — flip one env flag to pause the bot for everyone except the owner
+- **Dev/prod split** — local dev bot + ngrok without touching the live Render deployment
+- **Changelog in-bot** — `/whats_new` for the latest shipped features
+- **Block-aware DB** — `is_blocked` tracking when users block the bot (cleaner outreach)
+
+---
+
+## Color palette
+
+Brand colors used across the <a href="https://nsfwprompts.app/" target="_blank" rel="noopener noreferrer">landing site</a>, bot UI copy, and marketing.
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=rect&color=0:06060a,50:6d28d9,100:d946ef&height=40&section=footer&width=600" alt=""/>
+</p>
+
+| # | Token | HEX | Role |
+|---|-------|-----|------|
+| 1 | **ink** | `#06060a` | Page background, modals, dark base |
+| 2 | **text** | `#f6f4ff` | Primary text, buttons, light on dark |
+| 3 | **violet-deep** | `#6d28d9` | Brand accent — CTA, gradients, focus |
+| 4 | **magenta** | `#d946ef` | Second accent — glow, shimmer, gradients |
+| 5 | **muted** | `#a6a3b8` | Secondary text, captions, calm UI |
+
+<p align="center">
+  <img src="https://img.shields.io/badge/ink-06060a?style=for-the-badge" alt="ink"/>
+  <img src="https://img.shields.io/badge/text-f6f4ff?style=for-the-badge" alt="text"/>
+  <img src="https://img.shields.io/badge/violet_deep-6d28d9?style=for-the-badge" alt="violet-deep"/>
+  <img src="https://img.shields.io/badge/magenta-d946ef?style=for-the-badge" alt="magenta"/>
+  <img src="https://img.shields.io/badge/muted-a6a3b8?style=for-the-badge" alt="muted"/>
+</p>
+
+---
+
+## Quick start
+
+```bash
+git clone https://github.com/vxdosick/ai-prompt-generator-telegram-bot.git
+cd ai-prompt-generator-telegram-bot
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env   # fill in tokens, DB URL, Stripe, OpenRouter
+alembic upgrade head
+uvicorn server.main:server --reload
+```
+
+Then expose locally (e.g. ngrok), set `SERVER_URL`, and register the webhook:
+
+```bash
+ngrok http 8000
+python -m core.set_webhook
+```
+
+Open <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">@nsfw_prompt_generator_bot</a> only after you intend to use **your** bot token — for local work, use the **dev bot** flow below.
+
+---
+
+## Tech stack
+
+<p align="center">
+  <img src="https://cdn.simpleicons.org/python/3776AB" height="42" alt="Python"/>
+  <img src="https://cdn.simpleicons.org/telegram/26A5E4" height="42" alt="Telegram"/>
+  <img src="https://cdn.simpleicons.org/fastapi/009688" height="42" alt="FastAPI"/>
+  <img src="https://raw.githubusercontent.com/encode/uvicorn/master/docs/uvicorn.png" height="42" alt="Uvicorn"/>
+  <img src="https://cdn.simpleicons.org/postgresql/4169E1" height="42" alt="PostgreSQL"/>
+  <img src="https://cdn.simpleicons.org/neon/00E599" height="42" alt="Neon"/>
+  <img src="https://cdn.simpleicons.org/sqlalchemy/D71F00" height="42" alt="SQLAlchemy"/>
+  <img src="https://api.iconify.design/mdi/database-arrow-right.svg?color=%236d28d9" height="42" alt="Alembic"/>
+  <img src="https://cdn.simpleicons.org/openrouter/412991" height="42" alt="OpenRouter"/>
+  <img src="https://cdn.simpleicons.org/stripe/635BFF" height="42" alt="Stripe"/>
+  <img src="https://cdn.simpleicons.org/render/412991" height="42" alt="Render"/>
+  <img src="https://cdn.simpleicons.org/ngrok/1F1E6" height="42" alt="ngrok"/>
+</p>
+
+| Layer | Technology |
+|-------|------------|
+| Runtime | <img src="https://cdn.simpleicons.org/python/3776AB" width="20" height="20" alt=""/> Python 3.12 |
+| Bot | <img src="https://cdn.simpleicons.org/telegram/26A5E4" width="20" height="20" alt=""/> <a href="https://github.com/python-telegram-bot/python-telegram-bot" target="_blank" rel="noopener noreferrer">python-telegram-bot</a> |
+| API | <img src="https://cdn.simpleicons.org/fastapi/009688" width="20" height="20" alt=""/> <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer">FastAPI</a> + <img src="https://raw.githubusercontent.com/encode/uvicorn/master/docs/uvicorn.png" width="20" height="20" alt=""/> <a href="https://www.uvicorn.org/" target="_blank" rel="noopener noreferrer">Uvicorn</a> |
+| Database | <img src="https://cdn.simpleicons.org/postgresql/4169E1" width="20" height="20" alt=""/> PostgreSQL (<img src="https://cdn.simpleicons.org/neon/00E599" width="20" height="20" alt=""/> <a href="https://neon.tech/" target="_blank" rel="noopener noreferrer">Neon</a>) |
+| ORM | <img src="https://cdn.simpleicons.org/sqlalchemy/D71F00" width="20" height="20" alt=""/> SQLAlchemy 2.0 (async) |
+| Migrations | <img src="https://api.iconify.design/mdi/database-arrow-right.svg?color=%236d28d9" width="20" height="20" alt=""/> Alembic |
+| AI | <img src="https://cdn.simpleicons.org/openrouter/412991" width="20" height="20" alt=""/> <a href="https://openrouter.ai/" target="_blank" rel="noopener noreferrer">OpenRouter</a> API |
+| Payments | <img src="https://cdn.simpleicons.org/stripe/635BFF" width="20" height="20" alt=""/> Stripe + <img src="https://cdn.simpleicons.org/telegram/26A5E4" width="20" height="20" alt=""/> Telegram Stars |
+| Deploy | <img src="https://cdn.simpleicons.org/render/412991" width="20" height="20" alt=""/> <a href="https://render.com/" target="_blank" rel="noopener noreferrer">Render</a> |
+| Local dev | <img src="https://cdn.simpleicons.org/ngrok/1F1E6" width="20" height="20" alt=""/> ngrok (webhook tunneling) |
+
+---
+
+## Bot commands
+
+| Command | Description |
+|---------|-------------|
+| `/start` | Getting started |
+| `/help` | Usage help |
+| `/balance` | Credits & buy generations |
+| `/prompts` | View saved prompts |
+| `/whats_new` | Latest updates & changelog |
+| `/terms` | Privacy & refund policy |
+| `/contacts` | Contact developer / report a bug |
+
+---
+
+## Installation & setup
+
+### 1. Environment
+
+Copy `.env.example` → `.env` and configure:
+
+| Variable | Purpose |
+|----------|---------|
+| `BOT_TOKEN`, `BOT_LINK` | Production Telegram bot |
+| `SERVER_URL` | Public URL (Render or ngrok) for webhooks & checkout |
+| `POSTGRES_URL` | Neon async Postgres URL |
+| `OPENAI_API_KEY`, `AI_MODEL` | OpenRouter key & model id |
+| `STRIPE_LIVE_*` | Stripe secret + webhook secret |
+| `PAYMENT_*` | Pack label, prices, credits |
+| `OWNER_TELEGRAM_ID` | Optional owner perks |
+| `MAINTENANCE_MODE` | `true` = maintenance for all except owner |
+| `MAX_SAVED_PROMPTS` | Saved prompt limit (default 5) |
+
+### 2. Database
+
+```bash
+alembic upgrade head
+```
+
+### 3. Run server
+
+**Development**
+
+```bash
+uvicorn server.main:server --reload
+```
+
+**Production**
+
+```bash
+uvicorn server.main:server --host 0.0.0.0 --port 8000
+```
+
+### 4. Webhook (production bot)
+
+Uses `BOT_TOKEN` + `SERVER_URL` from `.env`:
+
+```bash
+python -m core.set_webhook
+```
+
+### 5. Dev bot (local only — prod on Render stays untouched)
+
+```bash
+# .env: USE_DEV_BOT=true, DEV_SERVER_URL=<your ngrok https URL>
+python -m core.dev_set_webhook
+uvicorn server.main:server --reload
+```
+
+Chat via **DEV_BOT_LINK** only. Set `USE_DEV_BOT=false` before deploy. Do **not** set `USE_DEV_BOT=true` on Render.
+
+### 6. Other useful commands
+
+```bash
+pip freeze > requirements.txt   # after dependency changes
+ngrok http 8000                 # local tunnel
+```
+
+---
 
 ### Roadmap
 
@@ -35,97 +257,22 @@ NSFW Prompt Generator AI is an AI-powered assistant designed to generate detaile
     - [ ] Refine push notifications for different scenarios
     - [ ] Improve the system prompt and make it more straightforward
 
-Keep an eye out for new feature ideas, or send your own suggestions to my Telegram – [@velvetmommy](http://t.me/velvetmommy). I’d be happy to hear any suggestions
+Keep an eye out for new feature ideas, or send your own suggestions to my Telegram – <a href="https://t.me/vxdosick" target="_blank" rel="noopener noreferrer">@vxdosick</a>. I’d be happy to hear any suggestions
 
-### List of bot's comands
+---
 
-1. /start - Getting started
-2. /help - Help with usage
-3. /balance - Check credits and buy generations ❤️
-4. /prompts - View saved prompts 🍓
-5. /whats_new - Latest updates and changelog 🚀
-6. /terms - Privacy Policy and Refund Policy
-7. /contacts - Contact the developer or report a bug 👨‍💻
+## Contributing & license
 
-### Main stack
+Contributing guidelines and usage terms are defined in <a href="./LICENSE" target="_blank" rel="noopener noreferrer"><strong>LICENSE</strong></a> — please read it before using or forking this project.
 
-- Python 3.12.12
-- Telegram Bot API (python-telegram-bot)
-- FastAPI — REST API layer
-- PostgreSQL (Neon) — lightweight database
-- SQLAlchemy 2.0 — ORM
-- OpenRouter API — AI integration
-- Uvicorn — ASGI server
-- Render - deployment
-- Ngrok - local tunneling for webhook testing
-- Stripe - Payment system
-- Alembic (For database migrations)
+---
 
-### Useful commands
+## Support the project
 
-1. Environment creating
+If this repo helped you — **⭐ star it** so others can find it. Stars help growth and keep the project alive.
 
-```bash
-python -m venv venv
-```
+Open to **collaboration**, integrations, and interesting bot/AI ideas. Reach me on Telegram: <a href="https://t.me/vxdosick" target="_blank" rel="noopener noreferrer">@vxdosick</a>.
 
-1. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-1. Copy environment variables from `.env.example` into a new `.env` file in the project root and fill in your values.
-2. Run database migrations
-
-```bash
-alembic upgrade head
-```
-
-1. Start server
-
-- development mode
-
-```bash
-uvicorn server.main:server --reload
-```
-
-- production mode
-
-```bash
-uvicorn server.main:server --host 0.0.0.0 --port 8000
-```
-
-1. Ngrok starting (development mode)
-
-```bash
-ngrok http 8000
-```
-
-1. Preservation of requirements (if they change)
-
-```bash
-pip freeze > requirements.txt
-```
-
-8. Register Telegram webhook (uses `BOT_TOKEN` and `SERVER_URL` from `.env`)
-
-```bash
-python -m core.set_webhook
-```
-
-9. Dev bot (local ngrok — prod bot on Render is untouched)
-
-```bash
-# .env: USE_DEV_BOT=true, DEV_SERVER_URL=your ngrok https URL
-python -m core.dev_set_webhook
-uvicorn server.main:server --reload
-```
-
-Open **DEV_BOT_LINK** in Telegram (not the prod bot). Set `USE_DEV_BOT=false` before deploy.
-
-### VERY IMPORTANT
-
-Before using this software, please read the [LICENSE](./LICENSE). Thank you – let’s make life a little bit easier for programmers ❤️
-
-### Product site: [nsfw_prompt_generator_bot](https://ai-prompt-generator-telegram-bot-server.onrender.com)
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6d28d9,100:d946ef&height=100&section=footer&text=Built%20with%20♥%20by%20vxdosick&fontSize=20&fontColor=f6f4ff&animation=twinkling&fontAlignY=75"/>
+</p>
