@@ -14,7 +14,7 @@ from bot.handlers.whats_new import WHATS_NEW_TEXT
 from bot.utils.guest_reply import open_bot_line, open_bot_markup, send_reply_message
 from db.db_ops import get_or_create_user
 from db.database import async_session_maker
-from core.config import SERVER_URL
+from core.config import LEGAL_PAGE_URL
 
 _GUEST_KNOWN = frozenset(
     {"start", "help", "balance", "terms", "contacts", "prompts", "whats_new"}
@@ -119,7 +119,7 @@ async def try_handle_guest_command(
             f"Quick & honest 💕\n\n"
             f"• No subscriptions — pay only for what you use\n"
             f"• Credits land right after payment\n"
-            f'<a href="{SERVER_URL}/terms">Terms, Privacy & Refunds</a>\n\n'
+            f'<a href="{LEGAL_PAGE_URL}">Terms, Privacy & Refunds</a>\n\n'
             f"{open_bot_line()}",
             parse_mode="HTML",
         )

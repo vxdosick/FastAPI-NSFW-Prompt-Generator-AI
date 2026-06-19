@@ -24,6 +24,11 @@ SUPPORT_TELEGRAM = os.getenv("SUPPORT_TELEGRAM")
 
 SERVER_URL = os.getenv("SERVER_URL")
 
+LEGAL_PAGE_URL = (
+    os.getenv("LEGAL_PAGE_URL", "https://nsfwprompts.app/terms").strip()
+    or "https://nsfwprompts.app/terms"
+)
+
 POSTGRES_URL = os.getenv("POSTGRES_URL")
 
 STRIPE_LIVE_SECRET_KEY = os.getenv("STRIPE_LIVE_SECRET_KEY")
