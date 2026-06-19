@@ -3,7 +3,6 @@ import html
 import secrets
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.constants import ChatType
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes
 
@@ -83,9 +82,6 @@ async def _edit_prompt_view(message, item: dict, position: int, total: int) -> N
 
 
 async def prompts(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     user_id = str(update.effective_user.id)
 
     async with async_session_maker() as db:
@@ -106,7 +102,7 @@ async def prompts(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def prompts_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    if not query or not query.message or query.message.chat.type != ChatType.PRIVATE:
+    if not query or not query.message:
         return
 
     parts = (query.data or "").split(":")
@@ -181,7 +177,7 @@ async def prompts_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def save_prompt_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    if not query or query.message.chat.type != ChatType.PRIVATE:
+    if not query or not query.message:
         return
 
     _, _, token = (query.data or "").partition(":")

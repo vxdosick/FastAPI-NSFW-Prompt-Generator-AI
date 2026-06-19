@@ -69,6 +69,7 @@ Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, 
 - **AI prompt generation** — one plain-language line → structured, high-detail, uncensored prompt (lighting, lens, mood, composition included)
 - **Model-tuned output** — syntax optimized for Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok-2 and SD workflows
 - **Copy-ready in one tap** — paste straight into your image pipeline
+- **Friend & group chats** — use the bot in a 1:1 with a friend (Guest Chat) or in a group, not only in DM with the bot. Example: open your chat with a friend → invoke <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">@nsfw_prompt_generator_bot</a> and send `cyberpunk succubus, neon rain, 8k`; in a group: `@nsfw_prompt_generator_bot confident woman in red dress, rooftop at night`
 - **Save favorites** — store and browse up to 5 prompts (`/prompts`; limit may grow)
 - **Credits & balance** — free trial, then Stripe checkout or Telegram Stars inside the bot
 - **Private by design** — no names, no emails; only what’s needed to run credits and generations
@@ -250,6 +251,8 @@ ngrok http 8000                 # local tunnel
     - [x] Implement a section to showcase new features and updates (`/whats_new` handler)
     - [x] A new column, `is_blocked`, has been added to the database
     - [x] All handler texts have been rewritten in a `warmer` and more `concise` style
+- 2026-06-19:
+    - [x] It is now possible to use the bot in private `chats and groups`
 
 **Planned**
 - xxxx-xx-xx:

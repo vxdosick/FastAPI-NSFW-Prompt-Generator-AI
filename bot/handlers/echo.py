@@ -4,7 +4,7 @@ import html
 import json
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
-from telegram.constants import ChatAction, ChatType
+from telegram.constants import ChatAction
 from openai import OpenAI
 
 # DB
@@ -117,9 +117,6 @@ async def _repeat_typing(context: ContextTypes.DEFAULT_TYPE, chat_id: int) -> No
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     user_id = str(update.effective_user.id)
 
     # 1) Busy-check FIRST: any text from a user with an active generation is rejected

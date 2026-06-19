@@ -3,7 +3,6 @@ import html
 
 import httpx
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice, Update
-from telegram.constants import ChatType
 from telegram.ext import ContextTypes
 
 # DB
@@ -67,9 +66,6 @@ async def build_payment_keyboard(user_id: str) -> InlineKeyboardMarkup:
 
 
 async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     user_id = str(update.effective_user.id)
 
     async with async_session_maker() as db:
@@ -95,7 +91,7 @@ async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def stars_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    if not query or query.message.chat.type != ChatType.PRIVATE:
+    if not query or not query.message:
         return
 
     await query.answer()
@@ -138,9 +134,6 @@ async def stars_pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 
 async def stars_successful_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     payment = update.message.successful_payment
     payload_parts = (payment.invoice_payload or "").split(":")
     credit_pack = _credit_pack()

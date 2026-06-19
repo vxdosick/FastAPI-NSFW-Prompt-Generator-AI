@@ -1,11 +1,7 @@
 # Imports
 from telegram import Update
 from telegram.ext import ContextTypes
-from telegram.constants import ChatType
-
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
     await update.message.reply_text(
         f"Little cheat sheet for you 💕\n\n"
         f"Send any spicy scene — I'll craft a detailed uncensored prompt 🔥\n\n"

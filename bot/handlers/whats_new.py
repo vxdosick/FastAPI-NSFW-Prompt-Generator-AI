@@ -1,5 +1,4 @@
 from telegram import Update
-from telegram.constants import ChatType
 from telegram.ext import ContextTypes
 
 WHATS_NEW_TEXT = (
@@ -12,7 +11,4 @@ WHATS_NEW_TEXT = (
 
 
 async def whats_new(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     await update.message.reply_text(WHATS_NEW_TEXT)

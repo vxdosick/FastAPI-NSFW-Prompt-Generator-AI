@@ -1,8 +1,6 @@
 # Imports
 from telegram import Update
 from telegram.ext import ContextTypes
-from telegram.constants import ChatType
-
 # DB
 from db.db_ops import get_or_create_user
 from db.database import async_session_maker
@@ -13,9 +11,6 @@ _START_EXAMPLE_PROMPT = (
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     user_id = str(update.effective_user.id)
 
     async with async_session_maker() as db:

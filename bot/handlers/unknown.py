@@ -1,12 +1,7 @@
 # Imports
 from telegram import Update
 from telegram.ext import ContextTypes
-from telegram.constants import ChatType
-
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     await update.message.reply_text(
         f"Don't know that one, love 😅\n\n"
         f"/start · /help · /balance · /prompts\n"

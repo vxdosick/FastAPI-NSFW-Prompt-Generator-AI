@@ -1,8 +1,6 @@
 # Imports
 from telegram import Update
 from telegram.ext import ContextTypes
-from telegram.constants import ChatType
-
 from core.config import SUPPORT_TELEGRAM
 
 
@@ -18,9 +16,6 @@ def _support_handle_and_url():
 
 
 async def contacts(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.type != ChatType.PRIVATE:
-        return
-
     display, url = _support_handle_and_url()
     if url and display:
         await update.message.reply_text(
