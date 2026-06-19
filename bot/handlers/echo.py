@@ -3,8 +3,7 @@ import asyncio
 import html
 import json
 import re
-import secrets
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes, filters
 from telegram.constants import ChatAction
 from openai import OpenAI
@@ -14,9 +13,11 @@ from db.db_ops import get_or_create_user
 from db.database import async_session_maker
 
 # Utils
-from bot.utils.is_rate_limited import is_rate_limited
 from bot.handlers.balance import build_payment_keyboard
+from bot.handlers.guest_commands import try_handle_guest_command
 from bot.handlers.prompts import cache_prompt_for_saving
+from bot.utils.guest_reply import active_bot_link, send_reply_message
+from bot.utils.is_rate_limited import is_rate_limited
 
 # Define tokens
 from core.config import (
@@ -107,52 +108,35 @@ async def _bot_username(context: ContextTypes.DEFAULT_TYPE) -> str | None:
     return username
 
 
-async def _send_text(
-    message,
-    context: ContextTypes.DEFAULT_TYPE,
-    text: str,
-    *,
-    parse_mode: str | None = None,
-    reply_markup: InlineKeyboardMarkup | None = None,
-) -> None:
-    if message.guest_query_id:
-        result = InlineQueryResultArticle(
-            id=secrets.token_hex(8),
-            title="NSFW Prompt Generator AI",
-            input_message_content=InputTextMessageContent(
-                message_text=text,
-                parse_mode=parse_mode,
-            ),
-        )
-        await context.bot.answer_guest_query(message.guest_query_id, result)
-        return
-
-    await message.reply_text(
-        text,
-        parse_mode=parse_mode,
-        reply_markup=reply_markup,
-    )
-
-
 async def _reply_out_of_credits(
     message,
     context: ContextTypes.DEFAULT_TYPE,
     user_id: str,
 ) -> None:
-    if message.guest_query_id:
-        await _send_text(
-            message,
-            context,
-            "Oh no... credits ran out right when it was getting fun ❤️\n"
-            "Open me in a private chat and /balance to top up 💕",
-        )
-        return
-
-    await message.reply_text(
+    await send_reply_message(
+        message,
+        context,
         "Oh no... credits ran out right when it was getting fun ❤️\n"
         "Top up and we keep going — one tap:",
         reply_markup=await build_payment_keyboard(user_id),
     )
+
+
+def _prompt_reply_markup(message, prompt: str, title: str) -> InlineKeyboardMarkup:
+    rows = [
+        [
+            InlineKeyboardButton(
+                "Save Prompt 🍓",
+                callback_data=cache_prompt_for_saving(prompt, title),
+            )
+        ]
+    ]
+    bot_link = active_bot_link()
+    if message.guest_query_id and bot_link:
+        rows.append(
+            [InlineKeyboardButton("Open me privately 💕", url=bot_link)]
+        )
+    return InlineKeyboardMarkup(rows)
 
 
 # Returns one of:
@@ -198,7 +182,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(user.id)
     prompt_text = _strip_bot_mention(message.text, await _bot_username(context))
     if not prompt_text:
-        await _send_text(
+        await send_reply_message(
             message,
             context,
             "Tell me what to paint, love 💕\n"
@@ -206,12 +190,17 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 1) Busy-check FIRST: any text from a user with an active generation is rejected
+    if message.guest_query_id and await try_handle_guest_command(
+        message, context, user_id, prompt_text
+    ):
+        return
+
+    # 1) Busy-check FIRST
     # without touching the model, the DB, or the rate limiter. Only the first spam
     # message inside one "busy session" gets a polite reply; the rest are ignored.
     status = await _acquire_or_report_busy(user_id)
     if status == "warn_now":
-        await _send_text(message, context, _BUSY_PLEASE_WAIT)
+        await send_reply_message(message, context, _BUSY_PLEASE_WAIT)
         return
     if status == "silent":
         return
@@ -226,7 +215,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         # 2) Length check — only meaningful for a brand-new request.
         if len(prompt_text) > 800:
-            await _send_text(
+            await send_reply_message(
                 message,
                 context,
                 "That's a lot at once, love 😅\n"
@@ -237,7 +226,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # 3) Soft rate limiter (separate from busy-check; protects against
         # rapid-fire requests AFTER a previous one already finished).
         if is_rate_limited(user_id):
-            await _send_text(
+            await send_reply_message(
                 message,
                 context,
                 "Slow down a tiny bit for me? 💕\n"
@@ -283,7 +272,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             raw = completion.choices[0].message.content
             if not raw or not raw.strip():
-                await _send_text(
+                await send_reply_message(
                     message,
                     context,
                     "Something hiccuped on my side 😅\n"
@@ -294,7 +283,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             try:
                 data = json.loads(raw)
             except json.JSONDecodeError:
-                await _send_text(
+                await send_reply_message(
                     message,
                     context,
                     "Something hiccuped on my side 😅\n"
@@ -309,7 +298,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 title = " ".join(title.split()[:3])
 
             if is_error or not prompt:
-                await _send_text(
+                await send_reply_message(
                     message,
                     context,
                     "I can't do that one, love 😅\n\n"
@@ -322,27 +311,22 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await db.commit()
             await db.refresh(user_row)
 
-            reply_markup = None
-            if not message.guest_query_id:
-                reply_markup = InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "Save Prompt 🍓",
-                                callback_data=cache_prompt_for_saving(prompt, title),
-                            )
-                        ]
-                    ]
+            save_hint = ""
+            if message.guest_query_id:
+                save_hint = (
+                    "\n\n<i>Tap Save 🍓 if the button works — "
+                    "or open me privately to keep favorites 💕</i>"
                 )
 
-            await _send_text(
+            await send_reply_message(
                 message,
                 context,
                 f"For you... 😏💕\n\n"
                 f"<code>{html.escape(prompt)}</code>\n\n"
-                f"Copy & paste into Flux, Pony, SDXL & more 🔥",
+                f"Copy & paste into Flux, Pony, SDXL & more 🔥"
+                f"{save_hint}",
                 parse_mode="HTML",
-                reply_markup=reply_markup,
+                reply_markup=_prompt_reply_markup(message, prompt, title),
             )
 
     finally:
