@@ -10,6 +10,7 @@ from core.config import DEV_BOT_LINK, DEV_BOT_TOKEN, DEV_SERVER_URL
 
 ALLOWED_UPDATES = [
     "message",
+    "guest_message",
     "callback_query",
     "pre_checkout_query",
     "my_chat_member",

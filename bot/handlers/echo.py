@@ -2,8 +2,10 @@
 import asyncio
 import html
 import json
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import ContextTypes
+import re
+import secrets
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent, Update
+from telegram.ext import ContextTypes, filters
 from telegram.constants import ChatAction
 from openai import OpenAI
 
@@ -77,6 +79,82 @@ _BUSY_PLEASE_WAIT = (
 )
 
 
+class GuestTextFilter(filters.MessageFilter):
+
+    def filter(self, message):
+        return bool(message.guest_query_id and message.text)
+
+
+GUEST_TEXT = GuestTextFilter()
+
+
+def _strip_bot_mention(text: str, bot_username: str | None) -> str:
+    cleaned = text.strip()
+    if not bot_username:
+        return cleaned
+    pattern = rf"@?{re.escape(bot_username)}\s*"
+    return re.sub(pattern, "", cleaned, flags=re.IGNORECASE).strip()
+
+
+async def _bot_username(context: ContextTypes.DEFAULT_TYPE) -> str | None:
+    cached = context.bot_data.get("bot_username")
+    if cached:
+        return cached
+    me = await context.bot.get_me()
+    username = (me.username or "").strip() or None
+    if username:
+        context.bot_data["bot_username"] = username
+    return username
+
+
+async def _send_text(
+    message,
+    context: ContextTypes.DEFAULT_TYPE,
+    text: str,
+    *,
+    parse_mode: str | None = None,
+    reply_markup: InlineKeyboardMarkup | None = None,
+) -> None:
+    if message.guest_query_id:
+        result = InlineQueryResultArticle(
+            id=secrets.token_hex(8),
+            title="NSFW Prompt Generator AI",
+            input_message_content=InputTextMessageContent(
+                message_text=text,
+                parse_mode=parse_mode,
+            ),
+        )
+        await context.bot.answer_guest_query(message.guest_query_id, result)
+        return
+
+    await message.reply_text(
+        text,
+        parse_mode=parse_mode,
+        reply_markup=reply_markup,
+    )
+
+
+async def _reply_out_of_credits(
+    message,
+    context: ContextTypes.DEFAULT_TYPE,
+    user_id: str,
+) -> None:
+    if message.guest_query_id:
+        await _send_text(
+            message,
+            context,
+            "Oh no... credits ran out right when it was getting fun ❤️\n"
+            "Open me in a private chat and /balance to top up 💕",
+        )
+        return
+
+    await message.reply_text(
+        "Oh no... credits ran out right when it was getting fun ❤️\n"
+        "Top up and we keep going — one tap:",
+        reply_markup=await build_payment_keyboard(user_id),
+    )
+
+
 # Returns one of:
 #   "acquired"   -> nobody was busy, we just marked this user busy. Caller must call _release_busy in finally.
 #   "warn_now"   -> user is already busy; this is the first spam during the active session, send the polite reply.
@@ -98,14 +176,6 @@ async def _release_busy(user_id: str) -> None:
         _busy_state.pop(user_id, None)
 
 
-async def _reply_out_of_credits(update: Update, user_id: str) -> None:
-    await update.message.reply_text(
-        "Oh no... credits ran out right when it was getting fun ❤️\n"
-        "Top up and we keep going — one tap:",
-        reply_markup=await build_payment_keyboard(user_id),
-    )
-
-
 async def _repeat_typing(context: ContextTypes.DEFAULT_TYPE, chat_id: int) -> None:
     """Keep Telegram 'typing…' visible while a long sync call runs off the event loop."""
     try:
@@ -117,42 +187,69 @@ async def _repeat_typing(context: ContextTypes.DEFAULT_TYPE, chat_id: int) -> No
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = str(update.effective_user.id)
+    message = update.effective_message
+    if not message or not message.text:
+        return
+
+    user = update.effective_user
+    if not user:
+        return
+
+    user_id = str(user.id)
+    prompt_text = _strip_bot_mention(message.text, await _bot_username(context))
+    if not prompt_text:
+        await _send_text(
+            message,
+            context,
+            "Tell me what to paint, love 💕\n"
+            "Scene, mood, outfit — I'll turn it into a prompt 🔥",
+        )
+        return
 
     # 1) Busy-check FIRST: any text from a user with an active generation is rejected
     # without touching the model, the DB, or the rate limiter. Only the first spam
     # message inside one "busy session" gets a polite reply; the rest are ignored.
     status = await _acquire_or_report_busy(user_id)
     if status == "warn_now":
-        await update.message.reply_text(_BUSY_PLEASE_WAIT)
+        await _send_text(message, context, _BUSY_PLEASE_WAIT)
         return
     if status == "silent":
         return
     # status == "acquired" — we now own the slot until _release_busy in finally.
 
+    typing_chat_id = (
+        message.guest_bot_caller_chat.id
+        if message.guest_bot_caller_chat
+        else message.chat_id
+    )
+
     try:
         # 2) Length check — only meaningful for a brand-new request.
-        if len(update.message.text) > 800:
-            await update.message.reply_text(
+        if len(prompt_text) > 800:
+            await _send_text(
+                message,
+                context,
                 "That's a lot at once, love 😅\n"
-                "Keep it under 800 chars — scene, pose, mood — then send again 💕"
+                "Keep it under 800 chars — scene, pose, mood — then send again 💕",
             )
             return
 
         # 3) Soft rate limiter (separate from busy-check; protects against
         # rapid-fire requests AFTER a previous one already finished).
         if is_rate_limited(user_id):
-            await update.message.reply_text(
+            await _send_text(
+                message,
+                context,
                 "Slow down a tiny bit for me? 💕\n"
-                "Few seconds, then try again..."
+                "Few seconds, then try again...",
             )
             return
 
         async with async_session_maker() as db:
-            user = await get_or_create_user(user_id, db)
+            user_row = await get_or_create_user(user_id, db)
 
-            if user.credits <= 0:
-                await _reply_out_of_credits(update, user_id)
+            if user_row.credits <= 0:
+                await _reply_out_of_credits(message, context, user_id)
                 return
 
             client = OpenAI(
@@ -160,43 +257,48 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 api_key=OPENAI_API_KEY,
             )
 
-            chat_id_param = update.effective_chat.id
-
             def _call_openrouter():
                 return client.chat.completions.create(
                     extra_body={},
                     model=AI_MODEL,
                     messages=[
                         {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": update.message.text},
+                        {"role": "user", "content": prompt_text},
                     ],
                     response_format=PROMPT_RESPONSE_FORMAT,
                 )
 
-            typing_task = asyncio.create_task(_repeat_typing(context, chat_id_param))
+            typing_task = None
+            if not message.guest_query_id:
+                typing_task = asyncio.create_task(_repeat_typing(context, typing_chat_id))
             try:
                 completion = await asyncio.to_thread(_call_openrouter)
             finally:
-                typing_task.cancel()
-                try:
-                    await typing_task
-                except asyncio.CancelledError:
-                    pass
+                if typing_task is not None:
+                    typing_task.cancel()
+                    try:
+                        await typing_task
+                    except asyncio.CancelledError:
+                        pass
 
             raw = completion.choices[0].message.content
             if not raw or not raw.strip():
-                await update.message.reply_text(
+                await _send_text(
+                    message,
+                    context,
                     "Something hiccuped on my side 😅\n"
-                    "Try again in a moment, love 💕"
+                    "Try again in a moment, love 💕",
                 )
                 return
 
             try:
                 data = json.loads(raw)
             except json.JSONDecodeError:
-                await update.message.reply_text(
+                await _send_text(
+                    message,
+                    context,
                     "Something hiccuped on my side 😅\n"
-                    "Try again in a moment, love 💕"
+                    "Try again in a moment, love 💕",
                 )
                 return
 
@@ -207,23 +309,22 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 title = " ".join(title.split()[:3])
 
             if is_error or not prompt:
-                await update.message.reply_text(
+                await _send_text(
+                    message,
+                    context,
                     "I can't do that one, love 😅\n\n"
                     "Adults only (18+), and it needs to be a real prompt idea.\n"
-                    "Paint me a spicy scene — I'll make it beautiful 💕"
+                    "Paint me a spicy scene — I'll make it beautiful 💕",
                 )
                 return
 
-            user.credits -= 1
+            user_row.credits -= 1
             await db.commit()
-            await db.refresh(user)
+            await db.refresh(user_row)
 
-            await update.message.reply_text(
-                f"For you... 😏💕\n\n"
-                f"<code>{html.escape(prompt)}</code>\n\n"
-                f"Copy & paste into Flux, Pony, SDXL & more 🔥",
-                parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(
+            reply_markup = None
+            if not message.guest_query_id:
+                reply_markup = InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
@@ -232,7 +333,16 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                             )
                         ]
                     ]
-                ),
+                )
+
+            await _send_text(
+                message,
+                context,
+                f"For you... 😏💕\n\n"
+                f"<code>{html.escape(prompt)}</code>\n\n"
+                f"Copy & paste into Flux, Pony, SDXL & more 🔥",
+                parse_mode="HTML",
+                reply_markup=reply_markup,
             )
 
     finally:

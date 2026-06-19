@@ -32,7 +32,7 @@ from bot.handlers.prompts import (
     save_prompt_callback,
 )
 from bot.handlers.chat_member import my_chat_member
-from bot.handlers.echo import echo
+from bot.handlers.echo import echo, GUEST_TEXT
 from bot.handlers.unknown import unknown
 from bot.utils.maintenance import maintenance_gate
 
@@ -63,6 +63,7 @@ app.add_handler(CallbackQueryHandler(save_prompt_callback, pattern=f"^{SAVE_PROM
 app.add_handler(CallbackQueryHandler(prompts_callback, pattern=f"^{PROMPTS_CALLBACK_PREFIX}:"))
 app.add_handler(PreCheckoutQueryHandler(stars_pre_checkout))
 app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, stars_successful_payment))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+app.add_handler(MessageHandler(GUEST_TEXT, echo))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & ~GUEST_TEXT, echo))
 # (always in the end)
 app.add_handler(MessageHandler(filters.COMMAND, unknown))
