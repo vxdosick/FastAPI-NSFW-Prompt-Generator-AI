@@ -9,6 +9,9 @@
   <a href="https://nsfwprompts.app/" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/Live%20Site-nsfwprompts.app-d946ef?style=for-the-badge&logo=googlechrome&logoColor=f6f4ff" alt="Live site"/>
   </a>
+  <a href="https://t.me/nsfwprompts_ai" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Telegram%20Channel-@nsfwprompts_ai-6d28d9?style=for-the-badge&logo=telegram&logoColor=f6f4ff" alt="Telegram channel"/>
+  </a>
   <a href="https://nsfwprompts.app/generator" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/Web%20App-Coming%20soon-a6a3b8?style=for-the-badge&logo=react&logoColor=f6f4ff" alt="Web app coming soon"/>
   </a>
@@ -27,7 +30,7 @@
 
 Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, **SDXL**, **Midjourney** and more — right inside Telegram. No prompt-engineering rabbit holes, no complex dashboards. Describe your scene, copy the result, generate.
 
-**Try it now:** <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">@nsfw_prompt_generator_bot</a> · **Site:** <a href="https://nsfwprompts.app/" target="_blank" rel="noopener noreferrer">nsfwprompts.app</a> · **Web app** — coming soon (same product, outside Telegram)
+**Try it now:** <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">@nsfw_prompt_generator_bot</a> · **Channel:** <a href="https://t.me/nsfwprompts_ai" target="_blank" rel="noopener noreferrer">@nsfwprompts_ai</a> · **Site:** <a href="https://nsfwprompts.app/" target="_blank" rel="noopener noreferrer">nsfwprompts.app</a> · **Web app** — coming soon (same product, outside Telegram)
 
 ---
 
@@ -76,6 +79,7 @@ Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, 
 - **Maintenance mode** — flip one env flag to pause the bot for everyone except the owner
 - **Dev/prod split** — local dev bot + ngrok without touching the live Render deployment
 - **Changelog in-bot** — `/whats_new` for the latest shipped features
+- **Telegram channel** — news, new features, Q&A & behind-the-scenes at <a href="https://t.me/nsfwprompts_ai" target="_blank" rel="noopener noreferrer">@nsfwprompts_ai</a>
 - **Block-aware DB** — `is_blocked` tracking when users block the bot (cleaner outreach)
 
 ---
