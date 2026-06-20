@@ -28,7 +28,7 @@
 
 **Built by <a href="https://t.me/vxdosick" target="_blank" rel="noopener noreferrer">vxdosick</a>** — I build web products, Telegram bots, and AI integrations.
 
-Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, **SDXL**, **Midjourney** and more — right inside Telegram. No prompt-engineering rabbit holes, no complex dashboards. Describe your scene, copy the result, generate.
+Turn a one-line idea into a rich, model-ready prompt for Pony XL, Fluxed Up, Pony Diffusion, Illustrious, Automatic1111, ComfyUI, Fooocus, Forge, RealVisXL, Juggernaut XL, CyberRealistic, NoobAI-XL, Grok-2, Persephone, and other NSFW models — right inside Telegram. No prompt-engineering rabbit holes, no complex dashboards. Describe your scene, copy the result, generate.
 
 **Try it now:** <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">@nsfw_prompt_generator_bot</a> · **Channel:** <a href="https://t.me/nsfwprompts_ai" target="_blank" rel="noopener noreferrer">@nsfwprompts_ai</a> · **Site:** <a href="https://nsfwprompts.app/" target="_blank" rel="noopener noreferrer">nsfwprompts.app</a> · **Web app** — coming soon (same product, outside Telegram)
 
@@ -49,7 +49,7 @@ Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, 
 | | |
 |---|---|
 | **What** | AI Telegram bot that writes detailed, uncensored image prompts |
-| **For** | Creators using Flux, Pony, SDXL, Midjourney, Grok-2, ComfyUI, A1111 |
+| **For** | Creators using Pony XL, Fluxed Up, Pony Diffusion, Illustrious, Automatic1111, ComfyUI, Fooocus, Forge, RealVisXL, Juggernaut XL, CyberRealistic, NoobAI-XL, Grok-2, Persephone, and other NSFW models |
 | **Why** | Skip tag wrangling — get pro-level prompts in ~3 seconds |
 | **Start** | 5 free generations, no card · top up via Stripe or Stars in `/balance` |
 
@@ -62,7 +62,7 @@ Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, 
 </p>
 
 <p align="center">
-  <strong>250+</strong> users on the bot · <strong>50%</strong> return for another session · <strong>5</strong> free gens for every newcomer · <strong>7+</strong> image models supported
+  <strong>250+</strong> users on the bot · <strong>50%</strong> return for another session · <strong>5</strong> free gens for every newcomer · <strong>14+</strong> image models supported
 </p>
 
 ---
@@ -70,7 +70,7 @@ Turn a one-line idea into a rich, model-ready prompt for **Flux**, **Pony XL**, 
 ## Features
 
 - **AI prompt generation** — one plain-language line → structured, high-detail, uncensored prompt (lighting, lens, mood, composition included)
-- **Model-tuned output** — syntax optimized for Flux, Pony XL, Illustrious, RealVisXL, SDXL, Midjourney, Grok-2 and SD workflows
+- **Model-tuned output** — syntax optimized for Pony XL, Fluxed Up, Pony Diffusion, Illustrious, Automatic1111, ComfyUI, Fooocus, Forge, RealVisXL, Juggernaut XL, CyberRealistic, NoobAI-XL, Grok-2, Persephone, and other NSFW models
 - **Copy-ready in one tap** — paste straight into your image pipeline
 - **Friend & group chats** — use the bot in a 1:1 with a friend (Guest Chat) or in a group, not only in DM with the bot. Example: open your chat with a friend → invoke <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noopener noreferrer">@nsfw_prompt_generator_bot</a> and send `cyberpunk succubus, neon rain, 8k`; in a group: `@nsfw_prompt_generator_bot confident woman in red dress, rooftop at night`
 - **Save favorites** — store and browse up to 5 prompts (`/prompts`; limit may grow)

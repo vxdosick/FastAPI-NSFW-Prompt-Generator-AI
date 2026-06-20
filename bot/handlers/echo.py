@@ -19,7 +19,7 @@ from bot.handlers.prompts import cache_prompt_token, SAVE_START_PREFIX
 from bot.utils.guest_reply import active_bot_link, bot_start_url, send_reply_message
 from bot.utils.is_rate_limited import is_rate_limited
 
-# Define tokens
+from core.supported_models import supported_models_phrase
 from core.config import (
     OPENAI_API_KEY,
     AI_MODEL,
@@ -333,7 +333,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 context,
                 f"For you... 😏💕\n\n"
                 f"<code>{html.escape(prompt)}</code>\n\n"
-                f"Copy & paste into Flux, Pony, SDXL & more 🔥"
+                f"Copy & paste into {supported_models_phrase()} 🔥"
                 f"{save_hint}",
                 parse_mode="HTML",
                 reply_markup=_prompt_reply_markup(message, prompt, title),

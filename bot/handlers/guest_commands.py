@@ -15,6 +15,7 @@ from bot.utils.guest_reply import open_bot_line, open_bot_markup, send_reply_mes
 from db.db_ops import get_or_create_user
 from db.database import async_session_maker
 from core.config import LEGAL_PAGE_URL
+from core.supported_models import supported_models_phrase
 
 _GUEST_KNOWN = frozenset(
     {"start", "help", "balance", "terms", "contacts", "prompts", "whats_new"}
@@ -63,7 +64,7 @@ async def try_handle_guest_command(
             message,
             context,
             f"Hey... you summoned me 💕\n\n"
-            f"<b>NSFW Prompt Generator AI</b> — spicy ideas → Flux, Pony, SDXL prompts 😈\n\n"
+            f"<b>NSFW Prompt Generator AI</b> — spicy ideas for {supported_models_phrase()} 😈\n\n"
             f"💎 <b>Credits:</b> {user.credits}\n\n"
             f"Try:\n<code>{_START_EXAMPLE_PROMPT}</code>\n\n"
             f"For everything else — {open_bot_line()}",

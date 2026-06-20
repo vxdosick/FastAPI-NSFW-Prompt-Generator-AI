@@ -1,9 +1,7 @@
 # Imports
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse, PlainTextResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import PlainTextResponse, RedirectResponse
 from telegram import Update
 import stripe
 
@@ -14,9 +12,19 @@ from db.database import async_session_maker, engine
 from db.models import Base
 
 # Define tokens
-from core.config import STRIPE_LIVE_SECRET_KEY, STRIPE_LIVE_WEBHOOK_SECRET, PAYMENT_CONTENT, PAYMENT_EURO_PRICE, PAYMENT_BOT_CREDITS, BOT_LINK
+from core.config import (
+    STRIPE_LIVE_SECRET_KEY,
+    STRIPE_LIVE_WEBHOOK_SECRET,
+    PAYMENT_CONTENT,
+    PAYMENT_EURO_PRICE,
+    PAYMENT_BOT_CREDITS,
+    BOT_LINK,
+    LEGAL_PAGE_URL,
+)
 stripe.api_key = STRIPE_LIVE_SECRET_KEY
 STRIPE_BOT_METADATA = "Prompt_Generator_Bot"
+
+SITE_HOME_URL = "https://nsfwprompts.app"
 
 # Project initialisation
 async def init_telegram():
@@ -37,24 +45,14 @@ async def lifespan(server: FastAPI):
 # FastAPI server creating
 server = FastAPI(lifespan=lifespan)
 
-# HTML templates and static files connecting
-templates = Jinja2Templates(directory="server/templates")
-server.mount("/static", StaticFiles(directory="server/static"), name="static")
-
 # FastAPI Endpoints
-@server.get("/", response_class=HTMLResponse)
-async def privacy_policy(request: Request):
-    return templates.TemplateResponse(
-        "index.html",
-        {"request": request}
-    )
+@server.get("/", include_in_schema=False)
+async def root():
+    return RedirectResponse(url=SITE_HOME_URL, status_code=302)
 
-@server.get("/terms", response_class=HTMLResponse)
-async def privacy_policy(request: Request):
-    return templates.TemplateResponse(
-        "terms.html",
-        {"request": request}
-    )
+@server.get("/terms", include_in_schema=False)
+async def terms():
+    return RedirectResponse(url=LEGAL_PAGE_URL, status_code=302)
 
 @server.get("/health")
 async def health():

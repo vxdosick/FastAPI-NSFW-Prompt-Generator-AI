@@ -11,6 +11,7 @@ from db.database import async_session_maker
 from bot.handlers.balance import STARS_START_PARAM, send_stars_invoice
 from bot.handlers.prompts import SAVE_START_PREFIX, save_prompt_from_token
 from core.config import MAX_SAVED_PROMPTS
+from core.supported_models import supported_models_phrase
 
 _START_EXAMPLE_PROMPT = (
     "Generate a cyberpunk succubus, neon lighting, highly detailed, 8k"
@@ -88,7 +89,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"Hey... you came 💕\n\n"
         f"<b>NSFW Prompt Generator AI</b> — whisper me a fantasy, "
-        f"I'll dress it up for Flux, Pony, SDXL & more 😈\n\n"
+        f"I'll dress it up for {supported_models_phrase()} 😈\n\n"
         f"💎 <b>Credits:</b> {user.credits}\n\n"
         f"Try me — tap, copy, send:\n"
         f"<code>{_START_EXAMPLE_PROMPT}</code>",
