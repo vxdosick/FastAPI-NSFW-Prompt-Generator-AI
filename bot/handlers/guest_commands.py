@@ -10,15 +10,17 @@ from bot.handlers.balance import (
 )
 from bot.handlers.contacts import _support_handle_and_url
 from bot.handlers.start import _START_EXAMPLE_PROMPT
+from bot.handlers.models import models_help_text
 from bot.handlers.whats_new import WHATS_NEW_TEXT
 from bot.utils.guest_reply import open_bot_line, open_bot_markup, send_reply_message
 from db.db_ops import get_or_create_user
 from db.database import async_session_maker
 from core.config import LEGAL_PAGE_URL
+from core.model_guidelines import resolve_command_slug
 from core.supported_models import supported_models_phrase
 
 _GUEST_KNOWN = frozenset(
-    {"start", "help", "balance", "terms", "contacts", "prompts", "whats_new"}
+    {"start", "help", "balance", "terms", "contacts", "prompts", "whats_new", "models"}
 )
 
 
@@ -45,12 +47,15 @@ async def try_handle_guest_command(
     if cmd is None:
         return False
 
+    if resolve_command_slug(cmd):
+        return False
+
     if cmd not in _GUEST_KNOWN:
         await send_reply_message(
             message,
             context,
             "Don't know that one here, love 😅\n\n"
-            "/start · /help · /balance · /prompts\n"
+            "/start · /help · /balance · /prompts · /models\n"
             "/whats_new · /contacts · /terms\n\n"
             f"Or @ me with a fantasy 🔥\n\n{open_bot_line()}",
             parse_mode="HTML",
@@ -84,6 +89,7 @@ async def try_handle_guest_command(
             "/help — this menu\n"
             "/balance — credits & top-up ❤️\n"
             "/prompts — saved prompts 🍓\n"
+            "/models — model-specific prompts 🎯\n"
             "/whats_new — what's new 🚀\n"
             "/contacts — reach me\n\n"
             "Plain /commands without @ won't reach me here — always tag me first 😉\n\n"
@@ -149,6 +155,15 @@ async def try_handle_guest_command(
             message,
             context,
             f"{WHATS_NEW_TEXT}\n\n{open_bot_line()}",
+            parse_mode="HTML",
+        )
+        return True
+
+    if cmd == "models":
+        await send_reply_message(
+            message,
+            context,
+            f"{models_help_text()}\n\n{open_bot_line()}",
             parse_mode="HTML",
         )
         return True

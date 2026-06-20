@@ -24,6 +24,8 @@ from bot.handlers.balance import (
 from bot.handlers.terms import terms
 from bot.handlers.contacts import contacts
 from bot.handlers.whats_new import whats_new
+from bot.handlers.models import models
+from bot.handlers.model_commands import model_command
 from bot.handlers.prompts import (
     PROMPTS_CALLBACK_PREFIX,
     SAVE_PROMPT_CALLBACK_PREFIX,
@@ -35,6 +37,7 @@ from bot.handlers.chat_member import my_chat_member
 from bot.handlers.echo import echo, GUEST_TEXT
 from bot.handlers.unknown import unknown
 from bot.utils.maintenance import maintenance_gate
+from core.model_guidelines import MODEL_COMMAND_SLUGS
 
 # Define tokens
 from core.config import ACTIVE_BOT_TOKEN, USE_DEV_BOT
@@ -57,6 +60,9 @@ app.add_handler(CommandHandler("terms", terms))
 app.add_handler(CommandHandler("contacts", contacts))
 app.add_handler(CommandHandler("prompts", prompts))
 app.add_handler(CommandHandler("whats_new", whats_new))
+app.add_handler(CommandHandler("models", models))
+for model_slug in MODEL_COMMAND_SLUGS:
+    app.add_handler(CommandHandler(model_slug, model_command))
 app.add_handler(ChatMemberHandler(my_chat_member, ChatMemberHandler.MY_CHAT_MEMBER))
 app.add_handler(CallbackQueryHandler(stars_payment, pattern=f"^{STARS_CALLBACK_DATA}$"))
 app.add_handler(CallbackQueryHandler(save_prompt_callback, pattern=f"^{SAVE_PROMPT_CALLBACK_PREFIX}:"))

@@ -1,24 +1,12 @@
-"""Canonical list of supported image-generation tools and model families."""
+"""Canonical display list — same models as MODEL_REGISTRY, popularity order."""
 
-# Ordered by popularity (descending).
-SUPPORTED_MODELS = [
-    "Pony XL",
-    "Fluxed Up",
-    "Pony Diffusion",
-    "Illustrious",
-    "Automatic1111",
-    "ComfyUI",
-    "Fooocus",
-    "Forge",
-    "RealVisXL",
-    "Juggernaut XL",
-    "CyberRealistic",
-    "NoobAI-XL",
-    "Grok-2",
-    "Persephone",
-]
+from core.model_guidelines import MODEL_COMMAND_SLUGS, MODEL_REGISTRY
 
 OTHER_MODELS_SUFFIX = "and other NSFW models"
+
+SUPPORTED_MODELS = [
+    MODEL_REGISTRY[slug]["display_name"] for slug in MODEL_COMMAND_SLUGS
+]
 
 
 def supported_models_phrase() -> str:

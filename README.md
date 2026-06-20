@@ -173,6 +173,7 @@ Open <a href="https://t.me/nsfw_prompt_generator_bot" target="_blank" rel="noope
 | `/help` | Usage help |
 | `/balance` | Credits & buy generations |
 | `/prompts` | View saved prompts |
+| `/models` | Model-specific prompt commands |
 | `/whats_new` | Latest updates & changelog |
 | `/terms` | Privacy & refund policy |
 | `/contacts` | Contact developer / report a bug |
