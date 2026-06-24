@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html
 MODEL_REGISTRY: dict[str, dict[str, str]] = {
     "ponyxl": {
         "display_name": "Pony XL",
@@ -170,6 +171,6 @@ def get_model_guidelines(slug: str) -> str:
 def models_help_lines() -> list[str]:
     lines = []
     for slug in MODEL_COMMAND_SLUGS:
-        name = MODEL_REGISTRY[slug]["display_name"]
-        lines.append(f"/{slug} — {name}")
+        name = html.escape(MODEL_REGISTRY[slug]["display_name"])
+        lines.append(f"<code>/{slug}</code> — {name}")
     return lines

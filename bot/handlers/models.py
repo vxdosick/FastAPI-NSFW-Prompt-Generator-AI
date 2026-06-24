@@ -9,7 +9,8 @@ from core.model_guidelines import models_help_lines
 def models_help_text() -> str:
     lines = models_help_lines()
     return (
-        "Pick a model, love — then your scene on the same line 💕\n\n"
+        "Pick a model, love 💕\n\n"
+        "Tap a command below to <b>copy</b> it — paste in chat and add your scene.\n\n"
         "Example:\n"
         "<code>/ponyxl cyberpunk succubus, neon rain, 8k</code>\n\n"
         "Or send any scene without a command for a <b>general prompt</b>.\n\n"
