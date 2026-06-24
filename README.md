@@ -18,7 +18,9 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/users-250%2B-f6f4ff?style=flat-square&labelColor=06060a" alt="250+ users"/>
+  <img src="https://img.shields.io/badge/users-320%2B-f6f4ff?style=flat-square&labelColor=06060a" alt="320+ users"/>
+  <img src="https://img.shields.io/badge/prompts-500%2B%20generated-f6f4ff?style=flat-square&labelColor=06060a" alt="500+ prompts generated"/>
+  <img src="https://img.shields.io/badge/saved-70%2B%20favorites-f6f4ff?style=flat-square&labelColor=06060a" alt="70+ saved favorites"/>
   <img src="https://img.shields.io/badge/retention-50%25%20return-f6f4ff?style=flat-square&labelColor=06060a" alt="50% return"/>
   <img src="https://img.shields.io/badge/free%20start-5%20generations-f6f4ff?style=flat-square&labelColor=06060a" alt="5 free generations"/>
   <img src="https://img.shields.io/badge/18%2B-adults%20only-f6f4ff?style=flat-square&labelColor=06060a" alt="18+ only"/>
@@ -58,11 +60,11 @@ Turn a one-line idea into a rich, model-ready prompt for Pony XL, Fluxed Up, Pon
 ## Metrics
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=rect&color=0:06060a,50:6d28d9,100:d946ef&height=120&section=header&text=250%2B%20active%20users%20%7C%2050%25%20come%20back&fontSize=22&fontColor=f6f4ff&fontAlignY=50"/>
+  <img src="https://capsule-render.vercel.app/api?type=rect&color=0:06060a,50:6d28d9,100:d946ef&height=120&section=header&text=320%2B%20users%20%7C%20500%2B%20prompts%20%7C%2050%25%20return&fontSize=22&fontColor=f6f4ff&fontAlignY=50"/>
 </p>
 
 <p align="center">
-  <strong>250+</strong> users on the bot · <strong>50%</strong> return for another session · <strong>5</strong> free gens for every newcomer · <strong>14+</strong> image models supported
+  <strong>320+</strong> users on the bot · <strong>500+</strong> prompts generated · <strong>70+</strong> saved to favorites · <strong>50%</strong> return for another session · <strong>5</strong> free gens for every newcomer · <strong>14+</strong> image models supported
 </p>
 
 ---
