@@ -25,14 +25,26 @@ _EMPTY_PROMPTS_TEXT = (
 )
 
 
-def cache_prompt_token(prompt: str, title: str = "") -> str:
+def cache_prompt_token(
+    prompt: str,
+    title: str = "",
+    negative_prompt: str = "",
+) -> str:
     token = secrets.token_urlsafe(8)
-    _prompt_save_cache[token] = {"prompt": prompt, "title": title}
+    _prompt_save_cache[token] = {
+        "prompt": prompt,
+        "title": title,
+        "negative_prompt": negative_prompt,
+    }
     return token
 
 
-def cache_prompt_for_saving(prompt: str, title: str = "") -> str:
-    token = cache_prompt_token(prompt, title)
+def cache_prompt_for_saving(
+    prompt: str,
+    title: str = "",
+    negative_prompt: str = "",
+) -> str:
+    token = cache_prompt_token(prompt, title, negative_prompt)
     return f"{SAVE_PROMPT_CALLBACK_PREFIX}:{token}"
 
 
@@ -44,9 +56,16 @@ async def save_prompt_from_token(user_id: str, token: str) -> tuple[str | None, 
 
     prompt = cached.get("prompt", "")
     title = cached.get("title", "")
+    negative_prompt = cached.get("negative_prompt", "")
 
     async with async_session_maker() as db:
-        was_saved, saved_prompts = await save_prompt(user_id, prompt, title, db)
+        was_saved, saved_prompts = await save_prompt(
+            user_id,
+            prompt,
+            title,
+            db,
+            negative_prompt=negative_prompt,
+        )
 
     if not was_saved:
         return None, "full"
@@ -56,13 +75,24 @@ async def save_prompt_from_token(user_id: str, token: str) -> tuple[str | None, 
     return saved_title, "saved"
 
 
+_NO_NEGATIVE_TEXT = "No negative prompt here… shyly left blank 🌸"
+
 def _format_prompt_message(item: dict, position: int, total: int) -> str:
     title = html.escape(str(item.get("title", "Prompt")))
     prompt_text = html.escape(str(item.get("prompt", "")))
+    negative_raw = str(item.get("negative_prompt", "") or "").strip()
+    if negative_raw:
+        negative_block = (
+            f"<b>Negative</b>\n<code>{html.escape(negative_raw)}</code>"
+        )
+    else:
+        negative_block = f"<i>{_NO_NEGATIVE_TEXT}</i>"
+
     return (
         f"Saved prompts 🍓 · up to {MAX_SAVED_PROMPTS}\n\n"
         f"<b>{title}</b> ({position + 1}/{total})\n\n"
-        f"<code>{prompt_text}</code>\n\n"
+        f"<b>Positive</b>\n<code>{prompt_text}</code>\n\n"
+        f"{negative_block}\n\n"
         f"Tap to copy ⬆️"
     )
 

@@ -73,7 +73,13 @@ async def get_saved_prompts(telegram_id: str, db: AsyncSession):
     return user.prompts
 
 
-async def save_prompt(telegram_id: str, prompt: str, title: str, db: AsyncSession):
+async def save_prompt(
+    telegram_id: str,
+    prompt: str,
+    title: str,
+    db: AsyncSession,
+    negative_prompt: str = "",
+):
     user = await get_or_create_user(telegram_id, db)
     prompts = list(user.prompts or [])
 
@@ -87,6 +93,7 @@ async def save_prompt(telegram_id: str, prompt: str, title: str, db: AsyncSessio
             "index": prompt_index,
             "title": display_title,
             "prompt": prompt,
+            "negative_prompt": (negative_prompt or "").strip(),
         }
     )
     user.prompts = prompts

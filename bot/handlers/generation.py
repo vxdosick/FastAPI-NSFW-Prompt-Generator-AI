@@ -76,8 +76,13 @@ async def _repeat_typing(context: ContextTypes.DEFAULT_TYPE, chat_id: int) -> No
         return
 
 
-def _prompt_reply_markup(message, prompt: str, title: str) -> InlineKeyboardMarkup:
-    token = cache_prompt_token(prompt, title)
+def _prompt_reply_markup(
+    message,
+    prompt: str,
+    title: str,
+    negative_prompt: str = "",
+) -> InlineKeyboardMarkup:
+    token = cache_prompt_token(prompt, title, negative_prompt)
     rows = []
 
     if message.guest_query_id:
@@ -313,7 +318,12 @@ async def run_prompt_generation(
                 context,
                 reply_text,
                 parse_mode="HTML",
-                reply_markup=_prompt_reply_markup(message, prompt, title),
+                reply_markup=_prompt_reply_markup(
+                    message,
+                    prompt,
+                    title,
+                    negative_prompt,
+                ),
             )
 
     finally:
